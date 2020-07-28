@@ -10,12 +10,17 @@ type AppTemplates struct {
 	templates *template.Template
 }
 
+var appTemplates *AppTemplates
+
 func NewAppTemplates() *AppTemplates {
-	return &AppTemplates{
-		templates: template.Must(template.ParseGlob("templates/*.html")),
+	if appTemplates == nil {
+		appTemplates = &AppTemplates{
+			templates: template.Must(template.ParseGlob("templates/*.html")),
+		}
 	}
+	return appTemplates
 }
 
-func (t *AppTemplates) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+func (t *AppTemplates) Render(w io.Writer, name string, data interface{}, _ echo.Context) error {
 	return t.templates.ExecuteTemplate(w, name, data)
 }
