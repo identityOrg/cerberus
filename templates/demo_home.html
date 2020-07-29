@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GOID Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/css/home.css">
+</head>
+<body>
+
+{{template "nav" .}}
+
+<!-- Begin page content -->
+<main role="main" class="container" id="main">
+    <h1 class="mt-5">{{.Type}}</h1>
+    {{if .AccessToken}}
+        <div class="my-3 p-3 bg-white rounded shadow-sm">
+            <div class="media text-muted pt-3">
+                <img data-src="holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1" alt="" class="mr-2 rounded">
+                <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                    <strong class="d-block text-gray-dark">Access Code</strong>
+                    {{.AccessCode}}
+                </p>
+            </div>
+            <div class="media text-muted pt-3">
+                <img data-src="holder.js/32x32?theme=thumb&bg=e83e8c&fg=e83e8c&size=1" alt="" class="mr-2 rounded">
+                <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                    <strong class="d-block text-gray-dark">Access Token</strong>
+                    {{.AccessToken}}
+                </p>
+            </div>
+            <div class="media text-muted pt-3">
+                <img data-src="holder.js/32x32?theme=thumb&bg=6f42c1&fg=6f42c1&size=1" alt="" class="mr-2 rounded">
+                <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                    <strong class="d-block text-gray-dark">Refresh Token</strong>
+                    {{.RefreshToken}}
+                </p>
+            </div>
+        </div>
+    {{else}}
+        <h3 id="error">Initiate login to see response</h3>
+    {{end}}
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <span class="text-muted">Place sticky footer content here.</span>
+    </div>
+</footer>
+
+{{template "foot"}}
+<script src="/static/js/implicit.js"></script>
+</body>
+</html>

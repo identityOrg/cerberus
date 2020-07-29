@@ -7,6 +7,7 @@ import (
 	"github.com/identityOrg/oidcsdk"
 	"github.com/identityOrg/oidcsdk/compose"
 	"github.com/identityOrg/oidcsdk/impl/strategies"
+	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"
 	"github.com/spf13/viper"
 	"net/http"
@@ -17,26 +18,39 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
+var (
+	OAuth2Config   *oidcsdk.Config
+	DbConfig       *config.DBConfig
+	OrmDB          *gorm.DB
+	ClientStore    *store.ClientStore
+	UserStore      *store.UserStore
+	TokenStore     *store.TokenStore
+	KeyStore       *store.KeyStore
+	SessionManager *session.Manager
+	Manager        oidcsdk.IManager
+)
+
 func NewManager() (oidcsdk.IManager, error) {
-	oauth2Config := oauth2Config()
-	dbConfig := config.NewDBConfig()
-	db, err := store.NewGOrmDB(dbConfig.Driver, dbConfig.DSN)
+	OAuth2Config = oauth2Config()
+	DbConfig = config.NewDBConfig()
+	var err error
+	OrmDB, err = store.NewGOrmDB(DbConfig.Driver, DbConfig.DSN)
 	if err != nil {
 		return nil, err
 	}
-	clientStore := store.NewClientStore(db)
-	tokenStore := store.NewTokenStore(db)
-	userStore := store.NewUserStore(db)
-	keyStore := store.NewKeyStore(db)
+	ClientStore = store.NewClientStore(OrmDB)
+	TokenStore = store.NewTokenStore(OrmDB)
+	UserStore = store.NewUserStore(OrmDB)
+	KeyStore = store.NewKeyStore(OrmDB)
 	strategy := strategies.NewDefaultStrategy()
 	sequence := compose.CreateDefaultSequence()
-	sessionManager := session.NewManager(db, "session-secret-key")
-	sequence = append(sequence, clientStore, tokenStore, userStore, keyStore, strategy, sessionManager)
-	manager := compose.DefaultManager(oauth2Config, sequence...)
-	compose.SetLoginPageHandler(manager, RenderLoginPage)
-	compose.SetConsentPageHandler(manager, RenderConsentPage)
+	SessionManager = session.NewManager(OrmDB, "session-secret-key")
+	sequence = append(sequence, ClientStore, TokenStore, UserStore, KeyStore, strategy, SessionManager)
+	Manager = compose.DefaultManager(OAuth2Config, sequence...)
+	compose.SetLoginPageHandler(Manager, RenderLoginPage)
+	compose.SetConsentPageHandler(Manager, RenderConsentPage)
 
-	return manager, nil
+	return Manager, nil
 }
 
 func oauth2Config() *oidcsdk.Config {

@@ -1,6 +1,7 @@
 package setup
 
 import (
+	"github.com/identityOrg/cerberus/impl/handlers"
 	"github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -26,6 +27,7 @@ func NewServer() *echo.Echo {
 		panic(err)
 	}
 	ConfigureEcho(e, manager)
+	handlers.NewLoginHandler(UserStore, SessionManager).Use(e)
 
 	return e
 }

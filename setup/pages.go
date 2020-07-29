@@ -8,11 +8,11 @@ import (
 func RenderLoginPage(writer http.ResponseWriter, r *http.Request) {
 	writer.Header().Set(oidcsdk.HeaderContentType, oidcsdk.ContentTypeHtml)
 	writer.WriteHeader(200)
-	_ = NewAppTemplates().Render(writer, "login.html", r, nil)
+	_ = NewAppTemplates().Render(writer, "login.html", r.URL.String(), nil)
 }
 
 func RenderConsentPage(writer http.ResponseWriter, r *http.Request) {
 	writer.Header().Set(oidcsdk.HeaderContentType, oidcsdk.ContentTypeHtml)
 	writer.WriteHeader(200)
-	_ = NewAppTemplates().Render(writer, "consent.html", r, nil)
+	_ = NewAppTemplates().Render(writer, "consent.html", r.URL.String(), nil)
 }

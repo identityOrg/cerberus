@@ -44,7 +44,7 @@ func (d *TokenStore) GetProfileWithAuthCodeSign(_ context.Context, signature str
 	if tm.RequestID == "" {
 		return nil, "", errors.New("'authorization_code' not found")
 	}
-	if time.Now().Before(tm.ACExpiry) {
+	if time.Now().After(tm.ACExpiry) {
 		return nil, "", errors.New("'authorization_code' expired")
 	}
 	return tm.RequestProfile, tm.RequestID, nil
@@ -60,7 +60,7 @@ func (d *TokenStore) GetProfileWithAccessTokenSign(_ context.Context, signature 
 	if tm.RequestID == "" {
 		return nil, "", errors.New("'access_token' not found")
 	}
-	if time.Now().Before(tm.ATExpiry) {
+	if time.Now().After(tm.ATExpiry) {
 		return nil, "", errors.New("'access_token' expired")
 	}
 	return tm.RequestProfile, tm.RequestID, nil
@@ -76,7 +76,7 @@ func (d *TokenStore) GetProfileWithRefreshTokenSign(_ context.Context, signature
 	if tm.RequestID == "" {
 		return nil, "", errors.New("'refresh_token' not found")
 	}
-	if time.Now().Before(tm.RTExpiry) {
+	if time.Now().After(tm.RTExpiry) {
 		return nil, "", errors.New("'refresh_token' expired")
 	}
 	return tm.RequestProfile, tm.RequestID, nil
