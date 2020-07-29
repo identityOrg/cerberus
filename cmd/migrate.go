@@ -28,6 +28,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 )
 
 // migrateCmd represents the migrate command
@@ -84,27 +85,30 @@ func runMigration(*cobra.Command, []string) {
 		userModel := store.UserDBModel{}
 		keyModel := store.KeyDBModel{}
 		tokenModel := store.TokenDBModel{}
+		sessionModel := sessionTable{}
 		if force {
 			handleError(ormDB.DropTableIfExists(clientModel).Error, "drop", clientModel.TableName())
 			handleError(ormDB.DropTableIfExists(userModel).Error, "drop", userModel.TableName())
 			handleError(ormDB.DropTableIfExists(keyModel).Error, "drop", keyModel.TableName())
 			handleError(ormDB.DropTableIfExists(tokenModel).Error, "drop", tokenModel.TableName())
+			handleError(ormDB.DropTableIfExists(sessionModel).Error, "drop", "sessions")
 		}
 
 		handleError(ormDB.AutoMigrate(clientModel).Error, "migrate", clientModel.TableName())
 		handleError(ormDB.AutoMigrate(userModel).Error, "migrate", userModel.TableName())
 		handleError(ormDB.AutoMigrate(keyModel).Error, "migrate", keyModel.TableName())
 		handleError(ormDB.AutoMigrate(tokenModel).Error, "migrate", tokenModel.TableName())
+		handleError(ormDB.Table("sessions").AutoMigrate(sessionModel).Error, "migrate", "sessions")
 
 		if demo {
-			log.Println("Creating demo client with client_id=demo and client_secret=demo")
+			log.Println("Creating demo client with client_id=client and client_secret=client")
 			client := store.NewClientDBModel()
 
-			client.ClientID = "demo"
-			client.ClientSecret = "demo"
+			client.ClientID = "client"
+			client.ClientSecret = "client"
 			client.Public = false
 			client.SetApprovedGrantTypes(strings.Split("authorization_code|password|refresh_token|client_credentials|implicit", "|"))
-			client.SetRedirectURIs([]string{"http://localhost:8080/callback"})
+			client.SetRedirectURIs([]string{"http://localhost:8080/redirect"})
 			client.SetApprovedScopes(strings.Split("openid|offline|offline_access", "|"))
 			client.SetIDTokenSigningAlg(jose.RS256)
 
@@ -141,4 +145,12 @@ func handleError(err error, op string, name string) {
 	} else {
 		log.Printf("Auto migrated table %s %s", op, name)
 	}
+}
+
+type sessionTable struct {
+	Id        string    `gorm:"primary_key"`
+	Data      string    `gorm:"type:text"`
+	CreatedAt time.Time `gorm:""`
+	UpdatedAt time.Time `gorm:""`
+	ExpiresAt time.Time `gorm:"index"`
 }

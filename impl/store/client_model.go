@@ -70,7 +70,7 @@ func (c *ClientDBModel) SetIDTokenSigningAlg(alg jose.SignatureAlgorithm) {
 
 func (c *ClientDBModel) GetRedirectURIs() []string {
 	redirectUris := c.Attributes["redirect_uris"]
-	return redirectUris.([]string)
+	return c.tryConvertArguments(redirectUris)
 }
 
 func (c *ClientDBModel) SetRedirectURIs(uris []string) {
@@ -79,7 +79,7 @@ func (c *ClientDBModel) SetRedirectURIs(uris []string) {
 
 func (c *ClientDBModel) GetApprovedScopes() oidcsdk.Arguments {
 	approvedScopes := c.Attributes["scopes"]
-	return approvedScopes.([]string)
+	return c.tryConvertArguments(approvedScopes)
 }
 
 func (c *ClientDBModel) SetApprovedScopes(scp oidcsdk.Arguments) {
@@ -87,8 +87,8 @@ func (c *ClientDBModel) SetApprovedScopes(scp oidcsdk.Arguments) {
 }
 
 func (c *ClientDBModel) GetApprovedGrantTypes() oidcsdk.Arguments {
-	approvedScopes := c.Attributes["grant_types"]
-	return approvedScopes.([]string)
+	asInt := c.Attributes["grant_types"]
+	return c.tryConvertArguments(asInt)
 }
 
 func (c *ClientDBModel) SetApprovedGrantTypes(gty oidcsdk.Arguments) {
@@ -101,4 +101,26 @@ func (c *ClientDBModel) GetAttribute(key string) interface{} {
 
 func (c *ClientDBModel) SetAttribute(key string, value interface{}) {
 	c.Attributes[key] = value
+}
+
+func (c *ClientDBModel) tryConvertArguments(asInt interface{}) []string {
+	switch k := asInt.(type) {
+	case []string:
+		return k
+	case string:
+		return []string{k}
+	case []interface{}:
+		var scopes []string
+		for _, i := range k {
+			if e, ok := i.(string); ok {
+				scopes = append(scopes, e)
+			}
+		}
+		return scopes
+	case interface{}:
+		if e, ok := k.(string); ok {
+			return []string{e}
+		}
+	}
+	return nil
 }
