@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"context"
+	demop "github.com/identityOrg/cerberus/impl/handlers/demo"
 	"github.com/identityOrg/cerberus/setup"
 	"github.com/spf13/viper"
 	"os"
@@ -38,6 +39,9 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		e := setup.NewServer(debug)
+		if demo {
+			demop.Setup(e)
+		}
 		serverConfig := ServerConfig{
 			Port: "localhost:8080",
 		}
@@ -67,15 +71,7 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(serveCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// serveCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
+	serveCmd.Flags().BoolVar(&demo, "demo", false, "Create demo client and user")
 	serveCmd.Flags().StringP("addr", "a", ":8080", "address to start server on")
 }
 
