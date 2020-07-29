@@ -21,7 +21,6 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.7.0
-	github.com/stretchr/testify v1.6.1 // indirect
 	github.com/valyala/fasttemplate v1.2.0 // indirect
 	github.com/wader/gormstore v0.0.0-20200328121358-65a111a20c23
 	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899
