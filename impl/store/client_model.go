@@ -16,6 +16,12 @@ type ClientDBModel struct {
 	AttributeData string                 `gorm:"column:attributes;type:lob"`
 }
 
+func NewClientDBModel() *ClientDBModel {
+	return &ClientDBModel{
+		Attributes: make(map[string]interface{}),
+	}
+}
+
 func (c *ClientDBModel) BeforeCreate() error {
 	marshal, err := json.Marshal(c.Attributes)
 	if err != nil {

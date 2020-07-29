@@ -3,19 +3,24 @@ package setup
 import (
 	"github.com/identityOrg/cerberus/impl/session"
 	"github.com/identityOrg/cerberus/impl/store"
+	"github.com/identityOrg/cerberus/setup/config"
 	"github.com/identityOrg/oidcsdk"
 	"github.com/identityOrg/oidcsdk/compose"
 	"github.com/identityOrg/oidcsdk/impl/strategies"
 	"github.com/labstack/echo/v4"
 	"github.com/spf13/viper"
 	"net/http"
+
+	_ "github.com/jinzhu/gorm/dialects/mssql"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
 func NewManager() (oidcsdk.IManager, error) {
-	config := oidcsdk.NewConfig("http://localhost:8080")
-	config.RefreshTokenEntropy = 0
-	_ = viper.UnmarshalKey("oauth2", config)
-	db, err := store.NewGOrmDB("sqlite3", "test.db")
+	oauth2Config := oauth2Config()
+	dbConfig := config.NewDBConfig()
+	db, err := store.NewGOrmDB(dbConfig.Driver, dbConfig.DSN)
 	if err != nil {
 		return nil, err
 	}
@@ -27,11 +32,18 @@ func NewManager() (oidcsdk.IManager, error) {
 	sequence := compose.CreateDefaultSequence()
 	sessionManager := session.NewManager(db, "session-secret-key")
 	sequence = append(sequence, clientStore, tokenStore, userStore, keyStore, strategy, sessionManager)
-	manager := compose.DefaultManager(config, sequence...)
+	manager := compose.DefaultManager(oauth2Config, sequence...)
 	compose.SetLoginPageHandler(manager, RenderLoginPage)
 	compose.SetConsentPageHandler(manager, RenderConsentPage)
 
 	return manager, nil
+}
+
+func oauth2Config() *oidcsdk.Config {
+	oauth2Config := oidcsdk.NewConfig("http://localhost:8080")
+	oauth2Config.RefreshTokenEntropy = 0
+	_ = viper.UnmarshalKey("oauth2", oauth2Config)
+	return oauth2Config
 }
 
 func ConfigureEcho(e *echo.Echo, manager oidcsdk.IManager) {
