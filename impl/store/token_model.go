@@ -1,6 +1,7 @@
 package store
 
 import (
+	"database/sql"
 	"encoding/json"
 	"github.com/identityOrg/oidcsdk"
 	"github.com/jinzhu/gorm"
@@ -10,9 +11,9 @@ import (
 type TokenDBModel struct {
 	gorm.Model
 	RequestID      string                 `gorm:"column:request_id;unique_index;size:60;default:null"`
-	ATSignature    string                 `gorm:"column:at_signature;unique_index;default:null"`
-	ACSignature    string                 `gorm:"column:ac_signature;unique_index;default:null"`
-	RTSignature    string                 `gorm:"column:rt_signature;unique_index;default:null"`
+	ATSignature    sql.NullString         `gorm:"column:at_signature;unique_index;default:null"`
+	ACSignature    sql.NullString         `gorm:"column:ac_signature;unique_index;default:null"`
+	RTSignature    sql.NullString         `gorm:"column:rt_signature;unique_index;default:null"`
 	ACExpiry       time.Time              `gorm:"column:ac_expiry"`
 	ATExpiry       time.Time              `gorm:"column:at_expiry"`
 	RTExpiry       time.Time              `gorm:"column:rt_expiry"`

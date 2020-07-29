@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"github.com/identityOrg/oidcsdk"
 	"github.com/jinzhu/gorm"
@@ -23,20 +24,20 @@ func (d *TokenStore) AutoMigrate() {
 func (d *TokenStore) StoreTokenProfile(_ context.Context, reqId string, signatures oidcsdk.TokenSignatures, profile oidcsdk.RequestProfile) (err error) {
 	tm := &TokenDBModel{
 		RequestID:      reqId,
-		ACSignature:    signatures.AuthorizationCodeSignature,
+		ACSignature:    toNullString(signatures.AuthorizationCodeSignature),
 		ACExpiry:       signatures.AuthorizationCodeExpiry,
-		ATSignature:    signatures.AccessTokenSignature,
+		ATSignature:    toNullString(signatures.AccessTokenSignature),
 		ATExpiry:       signatures.AccessTokenExpiry,
-		RTSignature:    signatures.RefreshTokenSignature,
+		RTSignature:    toNullString(signatures.RefreshTokenSignature),
 		RTExpiry:       signatures.RefreshTokenExpiry,
 		RequestProfile: profile,
 	}
-	return d.db.Table("tokens").Create(tm).Error
+	return d.db.Create(tm).Error
 }
 
 func (d *TokenStore) GetProfileWithAuthCodeSign(_ context.Context, signature string) (profile oidcsdk.RequestProfile, reqId string, err error) {
 	tm := &TokenDBModel{
-		ACSignature: signature,
+		ACSignature: toNullString(signature),
 	}
 	if err = d.db.Where(tm).Find(tm).Error; err != nil {
 		return nil, "", err
@@ -52,7 +53,7 @@ func (d *TokenStore) GetProfileWithAuthCodeSign(_ context.Context, signature str
 
 func (d *TokenStore) GetProfileWithAccessTokenSign(_ context.Context, signature string) (profile oidcsdk.RequestProfile, reqId string, err error) {
 	tm := &TokenDBModel{
-		ATSignature: signature,
+		ATSignature: toNullString(signature),
 	}
 	if err = d.db.Where(tm).Find(tm).Error; err != nil {
 		return nil, "", err
@@ -68,7 +69,7 @@ func (d *TokenStore) GetProfileWithAccessTokenSign(_ context.Context, signature 
 
 func (d *TokenStore) GetProfileWithRefreshTokenSign(_ context.Context, signature string) (profile oidcsdk.RequestProfile, reqId string, err error) {
 	tm := &TokenDBModel{
-		RTSignature: signature,
+		RTSignature: toNullString(signature),
 	}
 	if err = d.db.Where(tm).Find(tm).Error; err != nil {
 		return nil, "", err
@@ -100,5 +101,16 @@ func (d *TokenStore) InvalidateWithRequestID(_ context.Context, reqID string, wh
 	if what&oidcsdk.ExpireAuthorizationCode > 0 {
 		tm.ACExpiry = time.Now()
 	}
-	return where.Update(tm).Error
+	return d.db.Save(tm).Error
+}
+
+func toNullString(s string) sql.NullString {
+	if s != "" {
+		return sql.NullString{
+			Valid:  true,
+			String: s,
+		}
+	} else {
+		return sql.NullString{Valid: false}
+	}
 }

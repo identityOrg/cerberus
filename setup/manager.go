@@ -21,6 +21,7 @@ import (
 var (
 	OAuth2Config   *oidcsdk.Config
 	DbConfig       *config.DBConfig
+	SecretConfig   *config.SecretConfig
 	OrmDB          *gorm.DB
 	ClientStore    *store.ClientStore
 	UserStore      *store.UserStore
@@ -30,21 +31,24 @@ var (
 	Manager        oidcsdk.IManager
 )
 
-func NewManager() (oidcsdk.IManager, error) {
+func NewManager(debug bool) (oidcsdk.IManager, error) {
 	OAuth2Config = oauth2Config()
 	DbConfig = config.NewDBConfig()
+	SecretConfig = config.NewSecretConfig()
 	var err error
 	OrmDB, err = store.NewGOrmDB(DbConfig.Driver, DbConfig.DSN)
 	if err != nil {
 		return nil, err
 	}
+	OrmDB.LogMode(debug)
 	ClientStore = store.NewClientStore(OrmDB)
 	TokenStore = store.NewTokenStore(OrmDB)
 	UserStore = store.NewUserStore(OrmDB)
 	KeyStore = store.NewKeyStore(OrmDB)
 	strategy := strategies.NewDefaultStrategy()
+	strategy.HmacKey = SecretConfig.TokenSecret
 	sequence := compose.CreateDefaultSequence()
-	SessionManager = session.NewManager(OrmDB, "session-secret-key")
+	SessionManager = session.NewManager(OrmDB, SecretConfig.SessionSecret)
 	sequence = append(sequence, ClientStore, TokenStore, UserStore, KeyStore, strategy, SessionManager)
 	Manager = compose.DefaultManager(OAuth2Config, sequence...)
 	compose.SetLoginPageHandler(Manager, RenderLoginPage)

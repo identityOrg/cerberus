@@ -76,6 +76,8 @@ func (u *UserStore) StoreConsent(context.Context, string, string, oidcsdk.Argume
 	return nil
 }
 
-func (u *UserStore) FetchUserProfile(context.Context, string) oidcsdk.RequestProfile {
-	panic("implement me")
+func (u *UserStore) FetchUserProfile(_ context.Context, username string) oidcsdk.RequestProfile {
+	rp := oidcsdk.RequestProfile{}
+	rp.SetUsername(username)
+	return rp
 }

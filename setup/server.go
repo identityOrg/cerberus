@@ -7,8 +7,9 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func NewServer() *echo.Echo {
+func NewServer(debug bool) *echo.Echo {
 	e := echo.New()
+	e.Debug = debug
 
 	p := prometheus.NewPrometheus("cerberus", nil)
 	p.Use(e)
@@ -22,7 +23,7 @@ func NewServer() *echo.Echo {
 
 	e.Renderer = NewAppTemplates()
 
-	manager, err := NewManager()
+	manager, err := NewManager(debug)
 	if err != nil {
 		panic(err)
 	}

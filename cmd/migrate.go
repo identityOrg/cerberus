@@ -17,6 +17,8 @@ package cmd
 
 import (
 	"bufio"
+	"crypto/rand"
+	"crypto/rsa"
 	"fmt"
 	"github.com/identityOrg/cerberus/impl/store"
 	config2 "github.com/identityOrg/cerberus/setup/config"
@@ -117,26 +119,50 @@ func runMigration(*cobra.Command, []string) {
 				log.Fatalf("failed to create demo client")
 			} else {
 				log.Println("demo client created")
-
-				log.Println("Creating demo user with username=user and password=user")
-				password, _ := bcrypt.GenerateFromPassword([]byte("user"), 12)
-				user := store.UserDBModel{
-					Username:          "user",
-					Password:          string(password),
-					Locked:            false,
-					Blocked:           false,
-					WrongAttemptCount: 0,
-				}
-				err = ormDB.Create(&user).Error
-				if err != nil {
-					log.Fatalf("failed to create demo user")
-				} else {
-					log.Println("demo user created")
-				}
+			}
+			log.Println("Creating demo user with username=user and password=user")
+			password, _ := bcrypt.GenerateFromPassword([]byte("user"), 12)
+			user := store.UserDBModel{
+				Username:          "user",
+				Password:          string(password),
+				Locked:            false,
+				Blocked:           false,
+				WrongAttemptCount: 0,
+			}
+			err = ormDB.Create(&user).Error
+			if err != nil {
+				log.Fatalf("failed to create demo user")
+			} else {
+				log.Println("demo user created")
+			}
+			log.Println("Creating demo signature key with kid=demo-key")
+			privateKey := &store.KeyDBModel{
+				KID:        "demo-key",
+				Asymmetric: true,
+				Algorithm:  "RS256",
+				Use:        "sign",
+			}
+			err = privateKey.SetPrivateKey(generateRandomRsaKey())
+			if err != nil {
+				log.Fatalf("failed to generate demo key")
+			}
+			err = ormDB.Create(privateKey).Error
+			if err != nil {
+				log.Fatalf("failed to create demo key")
+			} else {
+				log.Println("demo key created")
 			}
 		}
 		log.Println("Migration operation complete")
 	}
+}
+
+func generateRandomRsaKey() *rsa.PrivateKey {
+	key, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		panic(err)
+	}
+	return key
 }
 
 func handleError(err error, op string, name string) {

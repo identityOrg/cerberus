@@ -30,6 +30,8 @@ func (c *ClientStore) GetClient(_ context.Context, clientID string) (oidcsdk.ICl
 	}
 }
 
-func (c *ClientStore) FetchClientProfile(context.Context, string) oidcsdk.RequestProfile {
-	panic("implement me")
+func (c *ClientStore) FetchClientProfile(_ context.Context, clientId string) oidcsdk.RequestProfile {
+	rp := oidcsdk.RequestProfile{}
+	rp.SetUsername(clientId)
+	return rp
 }
