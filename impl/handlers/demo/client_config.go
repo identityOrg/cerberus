@@ -32,4 +32,6 @@ func Setup(e *echo.Echo) {
 	e.GET("/password", HandlePasswordPage)
 	e.POST("/password", HandlePasswordPost)
 	e.GET("/client_credentials", HandleClientCredential)
+	e.POST("/refresh", HandleRefresh)
+	e.POST("/hybrid", HandleHybridAPI)
 }

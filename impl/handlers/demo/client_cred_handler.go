@@ -17,6 +17,5 @@ func HandleClientCredential(c echo.Context) error {
 		hpd.RefreshToken = token.RefreshToken
 	}
 
-	hpd.SetStateCookie(c)
 	return c.Render(http.StatusOK, "demo_home.html", hpd)
 }

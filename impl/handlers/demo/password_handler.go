@@ -8,7 +8,6 @@ import (
 
 func HandlePasswordPage(c echo.Context) error {
 	hpd := NewHomePageData("Resource Owner Password Demo")
-	hpd.SetStateCookie(c)
 	return c.Render(http.StatusOK, "demo_password.html", hpd)
 }
 
@@ -24,8 +23,11 @@ func HandlePasswordPost(c echo.Context) error {
 	} else {
 		hpd.AccessToken = token.AccessToken
 		hpd.RefreshToken = token.RefreshToken
+		idToken := token.Extra("id_token")
+		if idToken != nil {
+			hpd.IDToken = idToken.(string)
+		}
 	}
 
-	hpd.SetStateCookie(c)
 	return c.Render(http.StatusOK, "demo_home.html", hpd)
 }

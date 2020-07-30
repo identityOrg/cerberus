@@ -10,7 +10,6 @@ import (
 
 func HandleHome(c echo.Context) error {
 	hpd := NewHomePageData("Demo Home")
-	hpd.SetStateCookie(c)
 	return c.Render(http.StatusOK, "demo_home.html", hpd)
 }
 
@@ -18,37 +17,27 @@ type HomePageData struct {
 	Type            string
 	AuthCodeFlowURL string
 	ImplicitFlowURL string
+	HybridFlowURL   string
 	AccessCode      string
 	AccessToken     string
 	RefreshToken    string
+	IDToken         string
 	State           string
-	OldState        string
 	CodeVerifier    string
-}
-
-func (hpd HomePageData) SetStateCookie(c echo.Context) {
-	cookie := new(http.Cookie)
-	cookie.Name = "state"
-	cookie.Value = hpd.State
-	c.SetCookie(cookie)
-}
-
-func (hpd *HomePageData) ReadStateCookie(c echo.Context) {
-	h, err := c.Cookie("state")
-	if err == nil {
-		hpd.OldState = h.Value
-	}
 }
 
 func NewHomePageData(pageType string) *HomePageData {
 	h := &HomePageData{Type: pageType}
-	h.State = RandomIdString(20)
+	h.State = "RandomIdString0wefwefwefwef"
 	h.AuthCodeFlowURL = conf.AuthCodeURL(h.State)
 	impUrl, _ := url.Parse(h.AuthCodeFlowURL)
 	query := impUrl.Query()
 	query.Set("response_type", "token")
 	impUrl.RawQuery = query.Encode()
 	h.ImplicitFlowURL = impUrl.String()
+	query.Set("response_type", "code token")
+	impUrl.RawQuery = query.Encode()
+	h.HybridFlowURL = impUrl.String()
 	return h
 }
 

@@ -38,7 +38,21 @@
                     {{.RefreshToken}}
                 </p>
             </div>
+            <div class="media text-muted pt-3">
+                <img data-src="holder.js/32x32?theme=thumb&bg=6f42c1&fg=6f42c1&size=1" alt="" class="mr-2 rounded">
+                <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                    <strong class="d-block text-gray-dark">ID Token</strong>
+                    {{.IDToken}}
+                </p>
+            </div>
         </div>
+        {{if .RefreshToken}}
+            <form action="/refresh" method="post">
+                <input type="hidden" value="{{.RefreshToken}}" name="refresh_token">
+                <input type="hidden" value="{{.AccessToken}}" name="access_token">
+                <input type="submit" value="Refresh" class="btn btn-success">
+            </form>
+        {{end}}
     {{else}}
         <h3 id="error">Initiate login to see response</h3>
     {{end}}
