@@ -149,6 +149,8 @@ github.com/identityOrg/oidcsdk v0.5.0 h1:wEv8B1yGjOJ1AhjRMbniUoeatXwaM2pnW0WlTV4
 github.com/identityOrg/oidcsdk v0.5.0/go.mod h1:h9086kLhYBUVhv3e9hMe+DYUJZgVPkfrnScLJnoivo8=
 github.com/identityOrg/oidcsdk v0.5.1 h1:jV7rRh0/jnV2yq8j1VYkBS6eqq+sugjEVUvOnDedbes=
 github.com/identityOrg/oidcsdk v0.5.1/go.mod h1:h9086kLhYBUVhv3e9hMe+DYUJZgVPkfrnScLJnoivo8=
+github.com/identityOrg/oidcsdk v0.6.0 h1:FAaQMcMDCIz0hhm+M5j5UZwfcH+l7W7eSv+P5jQCEvc=
+github.com/identityOrg/oidcsdk v0.6.0/go.mod h1:h9086kLhYBUVhv3e9hMe+DYUJZgVPkfrnScLJnoivo8=
 github.com/inconshreveable/mousetrap v1.0.0 h1:Z8tu5sraLXCXIcARxBp/8cbvlwVa7Z1NHg9XEKhtSvM=
 github.com/inconshreveable/mousetrap v1.0.0/go.mod h1:PxqpIevigyE2G7u3NXJIT2ANytuPF1OarO4DADm73n8=
 github.com/jinzhu/gorm v1.9.12/go.mod h1:vhTjlKSJUTWNtcbQtrMBFCxy7eXTzeCAzfL5fBZT/Qs=

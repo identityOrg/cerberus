@@ -72,4 +72,5 @@ func ConfigureEcho(e *echo.Echo, manager oidcsdk.IManager) {
 	oauth2.POST("/token", echo.WrapHandler(http.HandlerFunc(manager.ProcessTokenEP)))
 	oauth2.POST("/introspection", echo.WrapHandler(http.HandlerFunc(manager.ProcessIntrospectionEP)))
 	oauth2.POST("/revocation", echo.WrapHandler(http.HandlerFunc(manager.ProcessRevocationEP)))
+	oauth2.GET("/me", echo.WrapHandler(http.HandlerFunc(manager.ProcessUserInfoEP)))
 }
