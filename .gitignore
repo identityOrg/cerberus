@@ -2,3 +2,5 @@ cerberus*
 .idea
 
 **/test.db
+
+*-packr.go

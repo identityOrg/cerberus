@@ -16,10 +16,11 @@ func NewServer(debug bool) *echo.Echo {
 	e.Use(middleware.Gzip(), middleware.Secure())
 	e.Use(middleware.Logger(), middleware.RequestID(), middleware.Recover())
 	//e.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
-	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
-		Root:   "static",
-		Browse: false,
-	}))
+	//e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
+	//	Root:   "static",
+	//	Browse: false,
+	//}))
+	e.Use(StaticFromBox)
 
 	e.Renderer = NewAppTemplates()
 
