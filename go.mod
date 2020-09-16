@@ -8,7 +8,7 @@ require (
 	github.com/golang/protobuf v1.3.5 // indirect
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/sessions v1.2.0
-	github.com/identityOrg/oidcsdk v0.6.0
+	github.com/identityOrg/oidcsdk v0.6.1
 	github.com/jinzhu/gorm v1.9.15
 	github.com/karrick/godirwalk v1.16.1 // indirect
 	github.com/labstack/echo-contrib v0.9.0

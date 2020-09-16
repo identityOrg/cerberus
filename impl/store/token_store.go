@@ -21,15 +21,15 @@ func (d *TokenStore) AutoMigrate() {
 	d.db.AutoMigrate(TokenDBModel{})
 }
 
-func (d *TokenStore) StoreTokenProfile(_ context.Context, reqId string, signatures oidcsdk.TokenSignatures, profile oidcsdk.RequestProfile) (err error) {
+func (d *TokenStore) StoreTokenProfile(_ context.Context, reqId string, signatures oidcsdk.ITokenSignatures, profile oidcsdk.RequestProfile) (err error) {
 	tm := &TokenDBModel{
 		RequestID:      reqId,
-		ACSignature:    toNullString(signatures.AuthorizationCodeSignature),
-		ACExpiry:       signatures.AuthorizationCodeExpiry,
-		ATSignature:    toNullString(signatures.AccessTokenSignature),
-		ATExpiry:       signatures.AccessTokenExpiry,
-		RTSignature:    toNullString(signatures.RefreshTokenSignature),
-		RTExpiry:       signatures.RefreshTokenExpiry,
+		ACSignature:    toNullString(signatures.GetACSignature()),
+		ACExpiry:       signatures.GetACExpiry(),
+		ATSignature:    toNullString(signatures.GetATSignature()),
+		ATExpiry:       signatures.GetATExpiry(),
+		RTSignature:    toNullString(signatures.GetRTSignature()),
+		RTExpiry:       signatures.GetRTExpiry(),
 		RequestProfile: profile,
 	}
 	return d.db.Create(tm).Error
