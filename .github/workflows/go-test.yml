@@ -26,7 +26,7 @@ jobs:
 
       - name: run packer2
         run: |
-          go get -u github.com/gobuffalo/packr/v2/packr2
+          go get github.com/gobuffalo/packr/v2/packr2
           packr2
 
       - name: Build
