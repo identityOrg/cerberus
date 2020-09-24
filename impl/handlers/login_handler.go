@@ -2,18 +2,18 @@ package handlers
 
 import (
 	"github.com/identityOrg/cerberus/impl/session"
-	"github.com/identityOrg/cerberus/impl/store"
+	"github.com/identityOrg/oidcsdk"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"time"
 )
 
 type LoginHandler struct {
-	UserStore      *store.UserStore
+	UserStore      oidcsdk.IUserStore
 	SessionManager *session.Manager
 }
 
-func NewLoginHandler(userStore *store.UserStore, sessionManager *session.Manager) *LoginHandler {
+func NewLoginHandler(userStore oidcsdk.IUserStore, sessionManager *session.Manager) *LoginHandler {
 	return &LoginHandler{UserStore: userStore, SessionManager: sessionManager}
 }
 

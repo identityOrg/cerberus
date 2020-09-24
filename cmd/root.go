@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
+	"time"
 
 	"github.com/spf13/viper"
 )
@@ -49,20 +50,10 @@ func Execute() {
 	}
 }
 
-var debug bool
-
 func init() {
 	cobra.OnInitialize(initConfig)
-
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cerberus.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "Help message for toggle")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is cerberus.yaml at work dir)")
+	rootCmd.PersistentFlags().BoolP("debug", "d", false, "enable debug message")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -81,4 +72,30 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+	setDefaultConfiguration()
+}
+
+func setDefaultConfiguration() {
+	viper.SetDefault("server", map[string]interface{}{"port": "localhost:8080", "debug": false, "demo": false})
+	viper.SetDefault("db", map[string]string{"driver": "sqlite3", "dsn": "test.db"})
+	viper.SetDefault("secret.SessionSecret", "jdhfbwjhebajwhevbahwevbahevbajwhevblawev")
+	viper.SetDefault("secret.TokenSecret", "jhkawhjebawhebvajebvkjahebvkjahebvkjebvj")
+	viper.SetDefault("provider", map[string]interface{}{
+		"Issuer":                   "http://localhost:8080",
+		"AuthCodeLifespan":         10 * time.Minute,
+		"AccessTokenLifespan":      1 * time.Hour,
+		"RefreshTokenLifespan":     30 * 24 * time.Hour,
+		"AccessTokenEntropy":       20,
+		"AuthorizationCodeEntropy": 20,
+		"RefreshTokenEntropy":      20,
+		"StateParamMinimumEntropy": 10,
+		"GlobalConsentRequired":    true,
+		"PKCEPlainEnabled":         false,
+	})
+	viper.SetDefault("core", map[string]interface{}{
+		"EncryptionKey":          "dafefascdaewwevawevwevdwfef",
+		"MaxInvalidLoginAttempt": 3,
+		"InvalidAttemptWindow":   time.Minute * 5,
+		"TOTPSecretLength":       6,
+	})
 }

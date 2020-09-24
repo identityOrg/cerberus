@@ -17,9 +17,10 @@ package cmd
 
 import (
 	"context"
-	demop "github.com/identityOrg/cerberus/impl/handlers/demo"
 	"github.com/identityOrg/cerberus/setup"
+	"github.com/identityOrg/cerberus/setup/config"
 	"github.com/spf13/viper"
+	"log"
 	"os"
 	"os/signal"
 	"time"
@@ -30,25 +31,19 @@ import (
 // serveCmd represents the serve command
 var serveCmd = &cobra.Command{
 	Use:   "serve",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Start the Cerberus server",
+	Long: `This command serves the Cerberus server:
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Start the server on configured port as per configuration
+found in designated file.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		e := setup.NewServer(debug)
-		if demo {
-			demop.Setup(e)
-		}
-		serverConfig := ServerConfig{
-			Port: "localhost:8080",
-		}
-		err := viper.UnmarshalKey("server", &serverConfig)
+		_ = viper.BindPFlags(cmd.Flags())
+		e, err := setup.CreateEchoServer()
 		if err != nil {
-			e.Logger.Errorf("error reading server config %s", err.Error())
+			log.Fatal("failed to setup echo server", err)
+			return
 		}
+		serverConfig := config.NewServerConfig()
 		// Start server
 		go func() {
 			if err := e.Start(serverConfig.Port); err != nil {
@@ -73,8 +68,4 @@ func init() {
 	rootCmd.AddCommand(serveCmd)
 	serveCmd.Flags().BoolVar(&demo, "demo", false, "Create demo client and user")
 	serveCmd.Flags().StringP("addr", "a", ":8080", "address to start server on")
-}
-
-type ServerConfig struct {
-	Port string
 }

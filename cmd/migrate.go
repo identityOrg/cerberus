@@ -16,33 +16,24 @@ limitations under the License.
 package cmd
 
 import (
-	"bufio"
-	"crypto/rand"
-	"crypto/rsa"
-	"fmt"
-	"github.com/identityOrg/cerberus/impl/store"
+	"github.com/identityOrg/cerberus-core"
 	config2 "github.com/identityOrg/cerberus/setup/config"
 	"github.com/jinzhu/gorm"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"golang.org/x/crypto/bcrypt"
-	"gopkg.in/square/go-jose.v2"
 	"log"
-	"os"
-	"strings"
 	"time"
 )
 
 // migrateCmd represents the migrate command
 var migrateCmd = &cobra.Command{
 	Use:   "migrate",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Migrate the database",
+	Long: `This command will migrate the DB to its desired state:
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Do not rely on it fully, its is suitable to only create
+the DB for the first time. Consecutive call may give
+un-predictable result.`,
 	Run: runMigration,
 }
 
@@ -58,23 +49,6 @@ func init() {
 }
 
 func runMigration(*cobra.Command, []string) {
-	if force {
-		log.Print("force argument is set, deleting the tables first")
-		fmt.Printf("Do you want to continue (Y/n): ")
-		reader := bufio.NewReader(os.Stdin)
-		char, _, err := reader.ReadRune()
-		if err != nil {
-			log.Println(err)
-			log.Fatal("Aborting the migration")
-			return
-		} else {
-			switch char {
-			case 'Y':
-			case 'y':
-				log.Println("continuing the migration with drop table")
-			}
-		}
-	}
 	config := config2.NewDBConfig()
 	_ = viper.UnmarshalKey("store", &config)
 	if ormDB, err := gorm.Open(config.Driver, config.DSN); err != nil {
@@ -82,87 +56,18 @@ func runMigration(*cobra.Command, []string) {
 		return
 	} else {
 		defer ormDB.Close()
-
-		clientModel := store.ClientDBModel{}
-		userModel := store.UserDBModel{}
-		keyModel := store.KeyDBModel{}
-		tokenModel := store.TokenDBModel{}
+		err := core.MigrateDB(ormDB, force, demo)
+		if err != nil {
+			log.Fatal("migration failed", err)
+			return
+		}
 		sessionModel := sessionTable{}
 		if force {
-			handleError(ormDB.DropTableIfExists(clientModel).Error, "drop", clientModel.TableName())
-			handleError(ormDB.DropTableIfExists(userModel).Error, "drop", userModel.TableName())
-			handleError(ormDB.DropTableIfExists(keyModel).Error, "drop", keyModel.TableName())
-			handleError(ormDB.DropTableIfExists(tokenModel).Error, "drop", tokenModel.TableName())
 			handleError(ormDB.DropTableIfExists(sessionModel).Error, "drop", "sessions")
 		}
-
-		handleError(ormDB.AutoMigrate(clientModel).Error, "migrate", clientModel.TableName())
-		handleError(ormDB.AutoMigrate(userModel).Error, "migrate", userModel.TableName())
-		handleError(ormDB.AutoMigrate(keyModel).Error, "migrate", keyModel.TableName())
-		handleError(ormDB.AutoMigrate(tokenModel).Error, "migrate", tokenModel.TableName())
 		handleError(ormDB.Table("sessions").AutoMigrate(sessionModel).Error, "migrate", "sessions")
-
-		if demo {
-			log.Println("Creating demo client with client_id=client and client_secret=client")
-			client := store.NewClientDBModel()
-
-			client.ClientID = "client"
-			client.ClientSecret = "client"
-			client.Public = false
-			client.SetApprovedGrantTypes(strings.Split("authorization_code|password|refresh_token|client_credentials|implicit", "|"))
-			client.SetRedirectURIs([]string{"http://localhost:8080/redirect"})
-			client.SetApprovedScopes(strings.Split("openid|offline|offline_access", "|"))
-			client.SetIDTokenSigningAlg(jose.RS256)
-
-			err := ormDB.Create(client).Error
-			if err != nil {
-				log.Fatalf("failed to create demo client")
-			} else {
-				log.Println("demo client created")
-			}
-			log.Println("Creating demo user with username=user and password=user")
-			password, _ := bcrypt.GenerateFromPassword([]byte("user"), 12)
-			user := store.UserDBModel{
-				Username:          "user",
-				Password:          string(password),
-				Locked:            false,
-				Blocked:           false,
-				WrongAttemptCount: 0,
-			}
-			err = ormDB.Create(&user).Error
-			if err != nil {
-				log.Fatalf("failed to create demo user")
-			} else {
-				log.Println("demo user created")
-			}
-			log.Println("Creating demo signature key with kid=demo-key")
-			privateKey := &store.KeyDBModel{
-				KID:        "demo-key",
-				Asymmetric: true,
-				Algorithm:  "RS256",
-				Use:        "sign",
-			}
-			err = privateKey.SetPrivateKey(generateRandomRsaKey())
-			if err != nil {
-				log.Fatalf("failed to generate demo key")
-			}
-			err = ormDB.Create(privateKey).Error
-			if err != nil {
-				log.Fatalf("failed to create demo key")
-			} else {
-				log.Println("demo key created")
-			}
-		}
 		log.Println("Migration operation complete")
 	}
-}
-
-func generateRandomRsaKey() *rsa.PrivateKey {
-	key, err := rsa.GenerateKey(rand.Reader, 2048)
-	if err != nil {
-		panic(err)
-	}
-	return key
 }
 
 func handleError(err error, op string, name string) {
