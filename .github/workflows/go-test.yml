@@ -30,7 +30,11 @@ jobs:
           packr2
 
       - name: Build
-        run: go build -v .
+        run: |
+          pwd
+          go mod download
+          go mod tidy
+          go build -v .
 
       - name: Test
         run: go test -v .
