@@ -158,12 +158,8 @@ github.com/hashicorp/logutils v1.0.0/go.mod h1:QIAnNjmIWmVIIkWDTG1z5v++HQmx9WQRO
 github.com/hashicorp/mdns v1.0.0/go.mod h1:tL+uN++7HEJ6SQLQ2/p+z2pH24WQKWjBPkE0mNTz8vQ=
 github.com/hashicorp/memberlist v0.1.3/go.mod h1:ajVTdAv/9Im8oMAAj5G31PhhMCZJV2pPBoIllUwCN7I=
 github.com/hashicorp/serf v0.8.2/go.mod h1:6hOLApaqBFA1NXqRQAsxw9QxuDEvNxSQRwA/JwenrHc=
-github.com/identityOrg/cerberus-core v0.3.2 h1:x5MLbYFEpHU3TLfZItK9C5PPFF0Zmma+NbWtxXxXV/4=
-github.com/identityOrg/cerberus-core v0.3.2/go.mod h1:Eu6tYuBim642V+YsHN9EjXmsE4MKuC+oVXNjgulxasE=
-github.com/identityOrg/cerberus-core v0.4.0 h1:WOekn82nosPijvrzmP7DIRCdf2Ge0X6iOqRKCegbdf8=
-github.com/identityOrg/cerberus-core v0.4.0/go.mod h1:Eu6tYuBim642V+YsHN9EjXmsE4MKuC+oVXNjgulxasE=
-github.com/identityOrg/oidcsdk v0.7.2 h1:Pa2N4JU6o5kMHRdJ78pleRxddkFhY0DG2K+fEqHE0PI=
-github.com/identityOrg/oidcsdk v0.7.2/go.mod h1:GueDP441PjFtZBL+3ZyesQNDWtpUs+hEwS+fmIuMAgI=
+github.com/identityOrg/cerberus-core v0.4.1 h1:7M6iG2RYAcuC025y0SnwaUhv5YZQDKrmlpPXNcN4+2k=
+github.com/identityOrg/cerberus-core v0.4.1/go.mod h1:zpoz+iL2OyOjE7L4B2bnZfGLyLVSWS28ilWbliEzbBM=
 github.com/identityOrg/oidcsdk v0.7.4 h1:tawbrbjs47/8/q2SmTMkXmnOgfu7F85Zlb5YQ82ucHU=
 github.com/identityOrg/oidcsdk v0.7.4/go.mod h1:GueDP441PjFtZBL+3ZyesQNDWtpUs+hEwS+fmIuMAgI=
 github.com/inconshreveable/mousetrap v1.0.0 h1:Z8tu5sraLXCXIcARxBp/8cbvlwVa7Z1NHg9XEKhtSvM=

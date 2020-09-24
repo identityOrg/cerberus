@@ -56,7 +56,8 @@ func runMigration(*cobra.Command, []string) {
 		return
 	} else {
 		defer ormDB.Close()
-		err := core.MigrateDB(ormDB, force, demo)
+		coreConfig := config2.NewCoreConfig()
+		err := core.MigrateDB(ormDB, coreConfig, force, demo)
 		if err != nil {
 			log.Fatal("migration failed", err)
 			return
@@ -66,6 +67,9 @@ func runMigration(*cobra.Command, []string) {
 			handleError(ormDB.DropTableIfExists(sessionModel).Error, "drop", "sessions")
 		}
 		handleError(ormDB.Table("sessions").AutoMigrate(sessionModel).Error, "migrate", "sessions")
+
+		secretStore := core.NewSecretStoreServiceImpl(ormDB)
+		_, _ = secretStore.CreateChannel(nil, "default", "RS256", "sign", 30)
 		log.Println("Migration operation complete")
 	}
 }

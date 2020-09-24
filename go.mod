@@ -9,7 +9,7 @@ require (
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/google/wire v0.4.0
 	github.com/gorilla/sessions v1.2.0
-	github.com/identityOrg/cerberus-core v0.4.0
+	github.com/identityOrg/cerberus-core v0.4.1
 	github.com/identityOrg/oidcsdk v0.7.4
 	github.com/jinzhu/gorm v1.9.16
 	github.com/karrick/godirwalk v1.16.1 // indirect

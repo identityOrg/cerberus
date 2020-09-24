@@ -97,5 +97,6 @@ func setDefaultConfiguration() {
 		"MaxInvalidLoginAttempt": 3,
 		"InvalidAttemptWindow":   time.Minute * 5,
 		"TOTPSecretLength":       6,
+		"PasswordCost":           17,
 	})
 }
