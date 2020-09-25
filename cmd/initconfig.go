@@ -26,12 +26,12 @@ import (
 var initconfigCmd = &cobra.Command{
 	Use:   "initconfig",
 	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Long: `Initialize config file:
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Merge fill the config file with all available
+configurations. It uses default value provided
+with the application, along with the values changed
+through various config sources.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		viper.SetConfigType("toml")
 		err := viper.WriteConfig()

@@ -66,13 +66,13 @@ func initConfig() {
 		viper.AddConfigPath(".")
 		viper.SetConfigName("cerberus")
 	}
-	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
 	setDefaultConfiguration()
+	viper.AutomaticEnv() // read in environment variables that match
 }
 
 func setDefaultConfiguration() {
