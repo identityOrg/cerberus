@@ -24,11 +24,6 @@ jobs:
         run: |
           go get -v -t -d ./...
 
-      - name: run rice embed
-        run: |
-          go get github.com/GeertJohan/go.rice/rice
-          rice -i setup embed-go
-
       - name: Install Gox
         run: |
           go get github.com/mitchellh/gox
@@ -36,7 +31,7 @@ jobs:
 
       - name: Test
         run: |
-          go test -v .
+          go test -v ./..
 
       - name: Build
         run: gox -os="darwin linux windows" -arch="amd64"

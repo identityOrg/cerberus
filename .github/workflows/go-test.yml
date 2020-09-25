@@ -24,17 +24,11 @@ jobs:
         run: |
           go get -v -t -d ./...
 
-      - name: run rice embed
-        run: |
-          go get github.com/GeertJohan/go.rice/rice
-          rice -i github.com/identityOrg/cerberus/setup embed-go
-
       - name: Build
         run: |
-          pwd
           go mod download
           go mod tidy
           go build -v .
 
       - name: Test
-        run: go test -v .
+        run: go test -v ./..
