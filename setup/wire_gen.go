@@ -22,10 +22,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-import (
-	_ "github.com/identityOrg/cerberus/packrd"
-)
-
 // Injectors from wire.go:
 
 func CreateEchoServer() (*echo.Echo, error) {

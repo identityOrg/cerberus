@@ -1,11 +1,11 @@
 package setup
 
 import (
-	"fmt"
-	"github.com/gobuffalo/packr/v2"
+	rice "github.com/GeertJohan/go.rice"
 	"github.com/labstack/echo/v4"
 	"html/template"
 	"io"
+	"os"
 )
 
 type AppTemplates struct {
@@ -16,16 +16,18 @@ var appTemplates *AppTemplates
 
 func NewAppTemplates() *AppTemplates {
 	if appTemplates == nil {
-		box := packr.New("templates", "../templates")
+		templateBox := rice.MustFindBox("../templates")
 		t := template.New("root")
-		for _, s := range box.List() {
-			findString, err := box.FindString(s)
+		_ = templateBox.Walk("/", func(path string, info os.FileInfo, err error) error {
 			if err != nil {
-				fmt.Printf("error in packr box config: %s\n", err.Error())
-			} else {
-				_, _ = t.New(s).Parse(findString)
+				return err
 			}
-		}
+			if !info.IsDir() {
+				tmplString := templateBox.MustString(info.Name())
+				_, _ = t.New(info.Name()).Parse(tmplString)
+			}
+			return nil
+		})
 		appTemplates = &AppTemplates{
 			templates: t,
 		}

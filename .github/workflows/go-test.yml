@@ -26,8 +26,8 @@ jobs:
 
       - name: run packer2
         run: |
-          go get github.com/gobuffalo/packr/v2/packr2
-          packr2
+          go get github.com/GeertJohan/go.rice/rice
+          rice -i github.com/identityOrg/cerberus/setup embed-go
 
       - name: Build
         run: |
