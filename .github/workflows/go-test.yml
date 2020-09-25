@@ -24,7 +24,7 @@ jobs:
         run: |
           go get -v -t -d ./...
 
-      - name: run packer2
+      - name: run rice embed
         run: |
           go get github.com/GeertJohan/go.rice/rice
           rice -i github.com/identityOrg/cerberus/setup embed-go
