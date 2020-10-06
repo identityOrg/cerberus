@@ -69,7 +69,7 @@ func runMigration(*cobra.Command, []string) {
 		handleError(ormDB.Table("sessions").AutoMigrate(sessionModel).Error, "migrate", "sessions")
 
 		secretStore := core.NewSecretStoreServiceImpl(ormDB)
-		_, _ = secretStore.CreateChannel(nil, "default", "RS256", "sign", 30)
+		_, _ = secretStore.CreateChannel(nil, "default", "RS256", "sig", 30)
 		log.Println("Migration operation complete")
 	}
 }

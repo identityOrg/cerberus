@@ -39,7 +39,9 @@ func NewServerConfig() *ServerConfig {
 		s.Debug = value
 	}
 	port := viper.GetString("addr")
-	s.Port = port
+	if port != "" {
+		s.Port = port
+	}
 	return s
 }
 

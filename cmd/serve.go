@@ -67,5 +67,5 @@ found in designated file.`,
 func init() {
 	rootCmd.AddCommand(serveCmd)
 	serveCmd.Flags().BoolVar(&demo, "demo", false, "Create demo client and user")
-	serveCmd.Flags().StringP("addr", "a", "localhost:8080", "address to start server on")
+	serveCmd.Flags().StringP("addr", "a", "", "address to start server on")
 }

@@ -33,8 +33,11 @@ configurations. It uses default value provided
 with the application, along with the values changed
 through various config sources.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			log.Error("config file name not specified")
+		}
 		viper.SetConfigType("toml")
-		err := viper.WriteConfig()
+		err := viper.WriteConfigAs(args[0])
 		if err != nil {
 			log.Error(err)
 		}

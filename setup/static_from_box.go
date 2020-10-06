@@ -24,7 +24,6 @@ func StaticFromRice(inner echo.HandlerFunc) echo.HandlerFunc {
 				return inner(c)
 			}
 			if !stat.IsDir() {
-				println(stat.ModTime().String())
 				staticHandler.ServeHTTP(c.Response(), c.Request())
 				return nil
 			} else {

@@ -42,7 +42,6 @@ func NewEchoServer(serverConfig *config.ServerConfig, templates *AppTemplates,
 }
 
 func configureProtocolRouted(e *echo.Echo, manager oidcsdk.IManager) {
-	e.GET("/keys", echo.WrapHandler(http.HandlerFunc(manager.ProcessKeysEP)))
 	e.GET(oidcsdk.UrlOidcDiscovery, echo.WrapHandler(http.HandlerFunc(manager.ProcessDiscoveryEP)))
 	oauth2 := e.Group("/oauth2", middle.NoCache())
 	oauth2.GET("/authorize", echo.WrapHandler(http.HandlerFunc(manager.ProcessAuthorizationEP)))
@@ -50,4 +49,5 @@ func configureProtocolRouted(e *echo.Echo, manager oidcsdk.IManager) {
 	oauth2.POST("/introspection", echo.WrapHandler(http.HandlerFunc(manager.ProcessIntrospectionEP)))
 	oauth2.POST("/revocation", echo.WrapHandler(http.HandlerFunc(manager.ProcessRevocationEP)))
 	oauth2.GET("/me", echo.WrapHandler(http.HandlerFunc(manager.ProcessUserInfoEP)))
+	oauth2.GET("/keys", echo.WrapHandler(http.HandlerFunc(manager.ProcessKeysEP)))
 }
