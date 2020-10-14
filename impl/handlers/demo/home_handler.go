@@ -29,7 +29,7 @@ type HomePageData struct {
 func NewHomePageData(pageType string) *HomePageData {
 	h := &HomePageData{Type: pageType}
 	h.State = "RandomIdString0wefwefwefwef"
-	h.AuthCodeFlowURL = conf.AuthCodeURL(h.State)
+	h.AuthCodeFlowURL = getAuthCodeConfig().AuthCodeURL(h.State)
 	impUrl, _ := url.Parse(h.AuthCodeFlowURL)
 	query := impUrl.Query()
 	query.Set("response_type", "token")

@@ -1,14 +1,23 @@
 package setup
 
 import (
+	"fmt"
 	"github.com/identityOrg/cerberus/setup/config"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mssql"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 func NewGormDB(config *config.DBConfig) (*gorm.DB, error) {
-	return gorm.Open(config.Driver, config.DSN)
+	switch config.Driver {
+	case "sqlite3":
+		return gorm.Open(sqlite.Open(config.DSN), &gorm.Config{})
+	case "mysql":
+		return gorm.Open(mysql.Open(config.DSN), &gorm.Config{})
+	case "postgres":
+		return gorm.Open(postgres.Open(config.DSN), &gorm.Config{})
+	default:
+		return nil, fmt.Errorf("unknown sql dialect/driver %s", config.Driver)
+	}
 }

@@ -20,7 +20,7 @@ func HandleRefresh(c echo.Context) error {
 		Expiry:       time.Now().Add(-1 * time.Hour),
 	}
 
-	source := conf.TokenSource(context.Background(), oldToken)
+	source := getAuthCodeConfig().TokenSource(context.Background(), oldToken)
 	token, err := source.Token()
 	if err != nil {
 		hpd.Type = err.Error()

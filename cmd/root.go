@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/identityOrg/cerberus/kube"
 	"github.com/spf13/cobra"
 	"os"
 	"time"
@@ -50,10 +51,14 @@ func Execute() {
 	}
 }
 
+var (
+	debug = false
+)
+
 func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is cerberus.yaml at work dir)")
-	rootCmd.PersistentFlags().BoolP("debug", "d", false, "enable debug message")
+	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "enable debug message")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -62,7 +67,6 @@ func initConfig() {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// Search config in home directory with name ".cerberus" (without extension).
 		viper.AddConfigPath(".")
 		viper.SetConfigName("cerberus")
 	}
@@ -73,6 +77,7 @@ func initConfig() {
 	}
 	setDefaultConfiguration()
 	viper.AutomaticEnv() // read in environment variables that match
+	kube.LoadKubeConfigMap()
 }
 
 func setDefaultConfiguration() {

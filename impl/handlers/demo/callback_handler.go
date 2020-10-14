@@ -14,9 +14,9 @@ func HandleCallback(c echo.Context) error {
 	hpd.AccessToken = c.QueryParam("token")
 	hpd.IDToken = c.QueryParam("id_token")
 	if hpd.AccessCode != "" {
-		token, err := conf.Exchange(context.Background(), hpd.AccessCode,
+		token, err := getAuthCodeConfig().Exchange(context.Background(), hpd.AccessCode,
 			oauth2.SetAuthURLParam("state", hpd.State),
-			oauth2.SetAuthURLParam("scope", strings.Join(conf.Scopes, " ")),
+			oauth2.SetAuthURLParam("scope", strings.Join(getAuthCodeConfig().Scopes, " ")),
 		)
 		if err != nil {
 			hpd.Type = err.Error()

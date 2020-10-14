@@ -11,9 +11,9 @@ import (
 func HandleHybridAPI(c echo.Context) error {
 	hpd := NewHomePageData("Hybrid Code Flow Response")
 	code := c.FormValue("code")
-	exchange, err := conf.Exchange(context.Background(), code,
+	exchange, err := getAuthCodeConfig().Exchange(context.Background(), code,
 		oauth2.SetAuthURLParam("state", hpd.State),
-		oauth2.SetAuthURLParam("scope", strings.Join(conf.Scopes, " ")),
+		oauth2.SetAuthURLParam("scope", strings.Join(getAuthCodeConfig().Scopes, " ")),
 	)
 	if err != nil {
 		return err

@@ -31,13 +31,13 @@ func CreateEchoServer() (*echo.Echo, error) {
 	defaultRequestContextFactory := factories.NewDefaultRequestContextFactory()
 	defaultErrorWriter := writers.NewDefaultErrorWriter()
 	defaultResponseWriter := writers.NewDefaultResponseWriter()
+	secretConfig := config.NewSecretConfig()
+	sessionManager := session.NewManager(secretConfig)
 	dbConfig := config.NewDBConfig()
 	db, err := NewGormDB(dbConfig)
 	if err != nil {
 		return nil, err
 	}
-	secretConfig := config.NewSecretConfig()
-	sessionManager := session.NewManager(db, secretConfig)
 	secretStoreServiceImpl := core.NewSecretStoreServiceImpl(db)
 	tokenStoreServiceImpl := core.NewTokenStoreServiceImpl(db)
 	coreConfig := config.NewCoreConfig()

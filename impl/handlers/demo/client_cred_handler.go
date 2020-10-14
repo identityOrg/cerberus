@@ -9,7 +9,7 @@ import (
 func HandleClientCredential(c echo.Context) error {
 	hpd := NewHomePageData("Client Credentials Example")
 
-	token, err := clientConf.Token(context.Background())
+	token, err := getClientCredConfig().Token(context.Background())
 	if err != nil {
 		hpd.Type = err.Error()
 	} else {

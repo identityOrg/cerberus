@@ -4,8 +4,6 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/identityOrg/cerberus/setup/config"
 	"github.com/identityOrg/oidcsdk"
-	"github.com/jinzhu/gorm"
-	"github.com/wader/gormstore"
 	"net/http"
 	"time"
 )
@@ -15,9 +13,9 @@ type Manager struct {
 	SessionName  string
 }
 
-func NewManager(db *gorm.DB, secretConfig *config.SecretConfig) *Manager {
+func NewManager(secretConfig *config.SecretConfig) *Manager {
 	return &Manager{
-		SessionStore: gormstore.New(db, []byte(secretConfig.SessionSecret)),
+		SessionStore: sessions.NewCookieStore([]byte(secretConfig.SessionSecret)),
 		SessionName:  "cerberus-session",
 	}
 }

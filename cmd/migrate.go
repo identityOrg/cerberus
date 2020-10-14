@@ -17,12 +17,11 @@ package cmd
 
 import (
 	"github.com/identityOrg/cerberus-core"
+	"github.com/identityOrg/cerberus/setup"
 	config2 "github.com/identityOrg/cerberus/setup/config"
-	"github.com/jinzhu/gorm"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"log"
-	"time"
 )
 
 // migrateCmd represents the migrate command
@@ -39,53 +38,67 @@ un-predictable result.`,
 
 var (
 	force bool
+	reset bool
 	demo  bool
 )
 
 func init() {
 	rootCmd.AddCommand(migrateCmd)
-	migrateCmd.Flags().BoolVarP(&force, "force", "f", false, "Clean DB tables before create")
-	migrateCmd.Flags().BoolVar(&demo, "demo", false, "Create demo client and user")
+	migrateCmd.Flags().BoolVarP(&force, "force", "f", false, "force non-interactive db reset")
+	migrateCmd.Flags().BoolVarP(&reset, "reset", "r", false, "reset all db tabled")
+	migrateCmd.Flags().BoolVar(&demo, "demo", false, "create demo client and user")
 }
 
-func runMigration(*cobra.Command, []string) {
+func runMigration(_ *cobra.Command, arg []string) {
 	config := config2.NewDBConfig()
 	_ = viper.UnmarshalKey("store", &config)
-	if ormDB, err := gorm.Open(config.Driver, config.DSN); err != nil {
+	if ormDB, err := setup.NewGormDB(config); err != nil {
 		log.Fatalf("error opening GORM of type %s and DSN %s", config.Driver, config.DSN)
 		return
 	} else {
-		defer ormDB.Close()
-		coreConfig := config2.NewCoreConfig()
-		err := core.MigrateDB(ormDB, coreConfig, force, demo)
+		if debug {
+			ormDB = ormDB.Debug()
+		}
+		err := core.SetupDBStructure(ormDB, reset, force)
 		if err != nil {
 			log.Fatal("migration failed", err)
 			return
 		}
-		sessionModel := sessionTable{}
-		if force {
-			handleError(ormDB.DropTableIfExists(sessionModel).Error, "drop", "sessions")
+		//sessionModel := sessionTable{}
+		//if force {
+		//	handleError(ormDB.DropTableIfExists(sessionModel).Error, "drop", "sessions")
+		//}
+		//handleError(ormDB.Table("sessions").AutoMigrate(sessionModel).Error, "migrate", "sessions")
+
+		if demo {
+			coreConfig := config2.NewCoreConfig()
+			sdkConfig := config2.NewSDKConfig()
+			redirectUri := ""
+			if len(arg) > 0 {
+				redirectUri = arg[0]
+			}
+			err := core.SetupDemoData(ormDB, coreConfig, sdkConfig, redirectUri)
+			if err != nil {
+				log.Fatal("migration failed", err)
+				return
+			}
 		}
-		handleError(ormDB.Table("sessions").AutoMigrate(sessionModel).Error, "migrate", "sessions")
-
-		secretStore := core.NewSecretStoreServiceImpl(ormDB)
-		_, _ = secretStore.CreateChannel(nil, "default", "RS256", "sig", 30)
-		log.Println("Migration operation complete")
+		log.Println("migration operation complete")
 	}
 }
 
-func handleError(err error, op string, name string) {
-	if err != nil {
-		log.Fatalf("failed to migrate %s %s", op, name)
-	} else {
-		log.Printf("Auto migrated table %s %s", op, name)
-	}
-}
-
-type sessionTable struct {
-	Id        string    `gorm:"primary_key"`
-	Data      string    `gorm:"type:text"`
-	CreatedAt time.Time `gorm:""`
-	UpdatedAt time.Time `gorm:""`
-	ExpiresAt time.Time `gorm:"index"`
-}
+//func handleError(err error, op string, name string) {
+//	if err != nil {
+//		log.Fatalf("failed to migrate %s %s", op, name)
+//	} else {
+//		log.Printf("Auto migrated table %s %s", op, name)
+//	}
+//}
+//
+//type sessionTable struct {
+//	Id        string    `gorm:"primary_key"`
+//	Data      string    `gorm:"type:text"`
+//	CreatedAt time.Time `gorm:""`
+//	UpdatedAt time.Time `gorm:""`
+//	ExpiresAt time.Time `gorm:"index"`
+//}

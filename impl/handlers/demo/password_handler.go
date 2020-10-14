@@ -17,7 +17,7 @@ func HandlePasswordPost(c echo.Context) error {
 	username := c.FormValue("username")
 	password := c.FormValue("password")
 
-	token, err := conf.PasswordCredentialsToken(context.Background(), username, password)
+	token, err := getAuthCodeConfig().PasswordCredentialsToken(context.Background(), username, password)
 	if err != nil {
 		hpd.Type = err.Error()
 	} else {
