@@ -7,7 +7,7 @@ require (
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/google/wire v0.4.0
 	github.com/gorilla/sessions v1.2.0
-	github.com/identityOrg/cerberus-core v0.7.2
+	github.com/identityOrg/cerberus-core v0.7.4
 	github.com/identityOrg/oidcsdk v0.7.7
 	github.com/labstack/echo-contrib v0.9.0
 	github.com/labstack/echo/v4 v4.1.16

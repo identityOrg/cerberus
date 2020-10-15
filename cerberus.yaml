@@ -1,2 +1,5 @@
 provider:
   issuer: "http://localhost:8080"
+db:
+  driver: mysql
+  dsn: user:user@tcp(192.168.64.4:31842)/cerberus?parseTime=true
