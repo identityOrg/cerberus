@@ -1,0 +1,27 @@
+core:
+  encryptionkey: dafefascdaewwevawevwevdwfef
+  invalidattemptwindow: 5m0s
+  maxinvalidloginattempt: 3
+  passwordcost: 10
+  totpsecretlength: 6
+db:
+  driver: sqlite3
+  dsn: test.db
+provider:
+  accesstokenentropy: 20
+  accesstokenlifespan: 1h0m0s
+  authcodelifespan: 10m0s
+  authorizationcodeentropy: 20
+  globalconsentrequired: true
+  issuer: "http://cerberus.prasenjit.net"
+  pkceplainenabled: false
+  refreshtokenentropy: 20
+  refreshtokenlifespan: 720h0m0s
+  stateparamminimumentropy: 10
+secret:
+  sessionsecret: jdhfbwjhebajwhevbahwevbahevbajwhevblawev
+  tokensecret: jhkawhjebawhebvajebvkjahebvkjahebvkjebvj
+server:
+  debug: false
+  demo: true
+  port: ":8080"

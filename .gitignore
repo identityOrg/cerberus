@@ -4,3 +4,4 @@ cerberus*
 **/test.db
 
 *-packr.go
+!cerberus-docker.yaml
