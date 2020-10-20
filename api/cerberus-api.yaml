@@ -1814,29 +1814,28 @@ components:
     SecretChannelPage:
       title: Root Type for SecretChannel
       description: A secret key channel for a particular
-      required:
-      - channels
       type: object
       allOf:
-      - required: []
+      - required:
+        - channels
         type: object
+        properties:
+          channels:
+            description: An array of `SecretChannelSummary` objects
+            type: array
+            items:
+              $ref: '#/components/schemas/SecretChannelSummary'
       - $ref: '#/components/schemas/Page'
-      properties:
-        channels:
-          description: An array of `SecretChannelSummary` objects
-          type: array
-          items:
-            $ref: '#/components/schemas/SecretChannelSummary'
       example:
         channels:
         - name: some text
           algorithm: some text
           key_usage: sig
-          id: 40
+          id: 99
         - name: some text
           algorithm: some text
           key_usage: enc
-          id: 40
+          id: 15
   responses:
     UnAuthorized:
       content:
