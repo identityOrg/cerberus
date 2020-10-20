@@ -311,9 +311,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Scope'
+                $ref: '#/components/schemas/ScopePage'
           description: Successful response - returns an array of `Scope` entities.
       operationId: get-scopes
       summary: List All scopes
