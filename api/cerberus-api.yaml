@@ -832,23 +832,6 @@ paths:
       operationId: get-secret-channel
       summary: Get a SecretChannel
       description: Gets the details of a single instance of a `SecretChannel`.
-    put:
-      requestBody:
-        description: Updated `SecretChannel` information.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SecretChannel'
-        required: true
-      tags:
-      - secret_channel
-      - superuser
-      responses:
-        "202":
-          description: Successful response.
-      operationId: update-secret-channel
-      summary: Update a SecretChannel
-      description: Updates an existing `SecretChannel`.
     post:
       tags:
       - secret_channel
