@@ -40,29 +40,54 @@ func (c *CerberusAPI) GetSecretChannels(ctx echo.Context, params GetSecretChanne
 }
 
 func (c *CerberusAPI) CreateSecretChannel(ctx echo.Context) error {
-	panic("implement me")
+	sc := &SecretChannel{}
+	err := ctx.Bind(sc)
+	if err != nil {
+		return err
+	}
+	_, err = c.SecretStoreStore.CreateChannel(ctx.Request().Context(), sc.Name, sc.Algorithm, sc.KeyUsage, uint(sc.ValidityDay))
+	if err != nil {
+		return err
+	}
+	return ctx.NoContent(http.StatusCreated)
 }
 
 func (c *CerberusAPI) FindSecretChannelByAlgouse(ctx echo.Context, params FindSecretChannelByAlgouseParams) error {
-	panic("implement me")
+	ch, err := c.SecretStoreStore.GetChannelByAlgoUse(ctx.Request().Context(), params.Algo, params.Use)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusOK, ch)
 }
 
 func (c *CerberusAPI) FindSecretChannelByName(ctx echo.Context, params FindSecretChannelByNameParams) error {
-	panic("implement me")
+	ch, err := c.SecretStoreStore.GetChannelByName(ctx.Request().Context(), params.Name)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusOK, ch)
 }
 
-func (c *CerberusAPI) DeleteSecretChannel(ctx echo.Context, id string) error {
-	panic("implement me")
+func (c *CerberusAPI) DeleteSecretChannel(ctx echo.Context, id int) error {
+	err := c.SecretStoreStore.DeleteChannel(ctx.Request().Context(), uint(id))
+	if err != nil {
+		return err
+	}
+	return ctx.NoContent(http.StatusNoContent)
 }
 
-func (c *CerberusAPI) GetSecretChannel(ctx echo.Context, id string) error {
-	panic("implement me")
+func (c *CerberusAPI) GetSecretChannel(ctx echo.Context, id int) error {
+	ch, err := c.SecretStoreStore.GetChannel(ctx.Request().Context(), uint(id))
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusOK, ch)
 }
 
-func (c *CerberusAPI) RenewSecretChannel(ctx echo.Context, id string) error {
-	panic("implement me")
-}
-
-func (c *CerberusAPI) UpdateSecretChannel(ctx echo.Context, id string) error {
-	panic("implement me")
+func (c *CerberusAPI) RenewSecretChannel(ctx echo.Context, id int) error {
+	err := c.SecretStoreStore.RenewSecret(ctx.Request().Context(), uint(id))
+	if err != nil {
+		return err
+	}
+	return ctx.NoContent(http.StatusNoContent)
 }
