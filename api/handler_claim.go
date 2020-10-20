@@ -16,21 +16,20 @@ func (c *CerberusAPI) GetClaims(ctx echo.Context, params GetClaimsParams) error 
 	}
 	claims, total, err := c.ScopeClaimStore.GetAllClaims(ctx.Request().Context(), uint(pageNumber), uint(pageSize))
 	if err != nil {
-		e := &Error{
-			ErrorCode: convertStringP("error"),
-			Message:   convertStringP(err.Error()),
+		return &Error{
+			ErrorCode: "error",
+			Message:   err.Error(),
 		}
-		return e
 	} else {
 		page := &ClaimPage{
 			Page: Page{
 				PageNumber: pageNumber,
-				PageTotal:  int(total),
 			},
 		}
+		page.PageTotal = CalculatePageCount(total, uint(pageSize))
 		for _, claim := range claims {
 			cl := Claim{
-				Description: &claim.Description,
+				Description: claim.Description,
 				Id:          int(claim.ID),
 				Name:        claim.Name,
 			}
@@ -46,32 +45,71 @@ func (c *CerberusAPI) CreateClaim(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	desc := ""
-	if createReq.Description != nil {
-		desc = *createReq.Description
-	}
-	_, err = c.ScopeClaimStore.CreateClaim(ctx.Request().Context(), createReq.Name, desc)
+	_, err = c.ScopeClaimStore.CreateClaim(ctx.Request().Context(), createReq.Name, createReq.Description)
 	if err != nil {
 		return &Error{
-			ErrorCode: convertStringP("error"),
-			Message:   convertStringP(err.Error()),
+			ErrorCode: "error",
+			Message:   err.Error(),
 		}
 	}
-	return ctx.String(http.StatusNotImplemented, "\"Not Implemented\"")
+	return ctx.NoContent(http.StatusCreated)
 }
 
 func (c *CerberusAPI) DeleteClaim(ctx echo.Context, id int) error {
-	return ctx.String(http.StatusNotImplemented, "\"Not Implemented\"")
+	err := c.ScopeClaimStore.DeleteClaim(ctx.Request().Context(), uint(id))
+	if err != nil {
+		return &Error{
+			ErrorCode: "error",
+			Message:   err.Error(),
+		}
+	}
+	return ctx.NoContent(http.StatusNoContent)
 }
 
 func (c *CerberusAPI) GetClaim(ctx echo.Context, id int) error {
-	return ctx.String(http.StatusNotImplemented, "\"Not Implemented\"")
+	claim, err := c.ScopeClaimStore.GetClaim(ctx.Request().Context(), uint(id))
+	if err != nil {
+		return &Error{
+			ErrorCode: "error",
+			Message:   err.Error(),
+		}
+	}
+	cl := &Claim{
+		Description: claim.Description,
+		Id:          int(claim.ID),
+		Name:        claim.Name,
+	}
+	return ctx.JSON(http.StatusOK, cl)
 }
 
 func (c *CerberusAPI) UpdateClaim(ctx echo.Context, id int) error {
-	return ctx.String(http.StatusNotImplemented, "\"Not Implemented\"")
+	cl := &Claim{}
+	err := ctx.Bind(cl)
+	if err != nil {
+		return err
+	}
+	err = c.ScopeClaimStore.UpdateClaim(ctx.Request().Context(), uint(id), cl.Description)
+	if err != nil {
+		return &Error{
+			ErrorCode: "error",
+			Message:   err.Error(),
+		}
+	}
+	return ctx.NoContent(http.StatusAccepted)
 }
 
 func (c *CerberusAPI) FindClaimByName(ctx echo.Context, params FindClaimByNameParams) error {
-	panic("implement me")
+	claim, err := c.ScopeClaimStore.FindClaimByName(ctx.Request().Context(), params.Name)
+	if err != nil {
+		return &Error{
+			ErrorCode: "error",
+			Message:   err.Error(),
+		}
+	}
+	cl := &Claim{
+		Description: claim.Description,
+		Id:          int(claim.ID),
+		Name:        claim.Name,
+	}
+	return ctx.JSON(http.StatusOK, cl)
 }

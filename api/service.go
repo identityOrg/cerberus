@@ -3,9 +3,16 @@ package api
 import "github.com/identityOrg/cerberus/core"
 
 type CerberusAPI struct {
-	ScopeClaimStore core.IScopeClaimStoreService
+	ScopeClaimStore  core.IScopeClaimStoreService
+	SecretStoreStore core.ISecretStoreService
 }
 
-func NewCerberusAPI(scopeClaimStore core.IScopeClaimStoreService) *CerberusAPI {
-	return &CerberusAPI{ScopeClaimStore: scopeClaimStore}
+func NewCerberusAPI(
+	scopeClaimStore core.IScopeClaimStoreService,
+	secretStoreStore core.ISecretStoreService,
+) *CerberusAPI {
+	return &CerberusAPI{
+		ScopeClaimStore:  scopeClaimStore,
+		SecretStoreStore: secretStoreStore,
+	}
 }

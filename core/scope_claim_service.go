@@ -15,7 +15,7 @@ func NewScopeClaimStoreServiceImpl(db *gorm.DB) *ScopeClaimStoreServiceImpl {
 	return &ScopeClaimStoreServiceImpl{Db: db}
 }
 
-func (s *ScopeClaimStoreServiceImpl) CreateScope(ctx context.Context, name string, description string) (id uint, err error) {
+func (s *ScopeClaimStoreServiceImpl) CreateScope(ctx context.Context, name string, description *string) (id uint, err error) {
 	scope := &models.ScopeModel{
 		Name:        name,
 		Description: description,
@@ -55,16 +55,16 @@ func (s *ScopeClaimStoreServiceImpl) GetAllScopes(ctx context.Context, page uint
 	var total int64
 	tx := s.Db.WithContext(ctx)
 	scopes := make([]*models.ScopeModel, 0)
-	query := tx.Model(&models.ServiceProviderModel{})
+	query := tx.Model(&models.ScopeModel{})
 	err := query.Limit(int(pageSize)).Offset(int(pageSize * page)).Find(&scopes).Error
 	if err != nil {
 		return nil, 0, err
 	}
-	query.Count(&total)
+	query.Limit(-1).Offset(-1).Count(&total)
 	return scopes, uint(total), nil
 }
 
-func (s *ScopeClaimStoreServiceImpl) UpdateScope(ctx context.Context, id uint, description string) error {
+func (s *ScopeClaimStoreServiceImpl) UpdateScope(ctx context.Context, id uint, description *string) error {
 	scope := &models.ScopeModel{}
 	scope.ID = id
 	db := s.Db.WithContext(ctx)
@@ -140,7 +140,7 @@ func (s *ScopeClaimStoreServiceImpl) RemoveClaimFromScope(ctx context.Context, s
 	return claimAssociation.Delete(claim)
 }
 
-func (s *ScopeClaimStoreServiceImpl) CreateClaim(ctx context.Context, name string, description string) (id uint, err error) {
+func (s *ScopeClaimStoreServiceImpl) CreateClaim(ctx context.Context, name string, description *string) (id uint, err error) {
 	claim := &models.ClaimModel{
 		Name:        name,
 		Description: description,
@@ -185,11 +185,11 @@ func (s *ScopeClaimStoreServiceImpl) GetAllClaims(ctx context.Context, page uint
 	if err != nil {
 		return nil, 0, err
 	}
-	query.Count(&total)
+	query.Limit(-1).Offset(-1).Count(&total)
 	return claims, uint(total), nil
 }
 
-func (s *ScopeClaimStoreServiceImpl) UpdateClaim(ctx context.Context, id uint, description string) error {
+func (s *ScopeClaimStoreServiceImpl) UpdateClaim(ctx context.Context, id uint, description *string) error {
 	claim := &models.ClaimModel{}
 	claim.ID = id
 	db := s.Db.WithContext(ctx)

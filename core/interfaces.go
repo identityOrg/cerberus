@@ -54,7 +54,7 @@ type (
 		oidcsdk.IClientStore
 	}
 	ISPCommonService interface {
-		CreateSP(ctx context.Context, clientName string, description string, metadata *models.ServiceProviderMetadata) (id uint, err error)
+		CreateSP(ctx context.Context, clientName string, description *string, metadata *models.ServiceProviderMetadata) (id uint, err error)
 		UpdateSP(ctx context.Context, id uint, public bool, metadata *models.ServiceProviderMetadata) (err error)
 		PatchSP(ctx context.Context, id uint, metadata *models.ServiceProviderMetadata) (err error)
 		DeleteSP(ctx context.Context, id uint) (err error)
@@ -89,19 +89,19 @@ type (
 		IClaimOperations
 	}
 	IClaimOperations interface {
-		CreateClaim(ctx context.Context, name string, description string) (id uint, err error)
+		CreateClaim(ctx context.Context, name string, description *string) (id uint, err error)
 		FindClaimByName(ctx context.Context, name string) (*models.ClaimModel, error)
 		GetClaim(ctx context.Context, id uint) (*models.ClaimModel, error)
 		GetAllClaims(ctx context.Context, page uint, pageSize uint) ([]*models.ClaimModel, uint, error)
-		UpdateClaim(ctx context.Context, id uint, description string) error
+		UpdateClaim(ctx context.Context, id uint, description *string) error
 		DeleteClaim(ctx context.Context, id uint) error
 	}
 	IScopeOperations interface {
-		CreateScope(ctx context.Context, name string, description string) (id uint, err error)
+		CreateScope(ctx context.Context, name string, description *string) (id uint, err error)
 		FindScopeByName(ctx context.Context, name string) (*models.ScopeModel, error)
 		GetScope(ctx context.Context, id uint) (*models.ScopeModel, error)
 		GetAllScopes(ctx context.Context, page uint, pageSize uint) ([]*models.ScopeModel, uint, error)
-		UpdateScope(ctx context.Context, id uint, description string) error
+		UpdateScope(ctx context.Context, id uint, description *string) error
 		DeleteScope(ctx context.Context, id uint) error
 		AddClaimToScope(ctx context.Context, scopeId uint, claimId uint) error
 		RemoveClaimFromScope(ctx context.Context, scopeId uint, claimId uint) error
@@ -112,7 +112,7 @@ type (
 	}
 	ISecretChannelManager interface {
 		CreateChannel(ctx context.Context, name string, algorithm string, use string, validityDay uint) (uint, error)
-		GetAllChannels(ctx context.Context) ([]*models.SecretChannelModel, error)
+		GetAllChannels(ctx context.Context, page uint, pageSize uint) ([]*models.SecretChannelModel, uint, error)
 		GetChannel(ctx context.Context, channelId uint) (*models.SecretChannelModel, error)
 		GetChannelByName(ctx context.Context, name string) (*models.SecretChannelModel, error)
 		GetChannelByAlgoUse(ctx context.Context, algo string, use string) (*models.SecretChannelModel, error)

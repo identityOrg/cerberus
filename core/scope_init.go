@@ -2,6 +2,7 @@ package core
 
 import (
 	"github.com/identityOrg/cerberus/core/models"
+	"github.com/identityOrg/cerberus/util"
 	"gorm.io/gorm"
 )
 
@@ -51,7 +52,7 @@ func InitializeDefaultScope(db *gorm.DB) error {
 	for name, desc := range StandardScopes {
 		scope := &models.ScopeModel{
 			Name:        name,
-			Description: desc,
+			Description: util.ConvertStringP(desc),
 		}
 		saveResult := db.FirstOrCreate(scope, "name = ?", name)
 		if saveResult.Error != nil {
@@ -62,7 +63,7 @@ func InitializeDefaultScope(db *gorm.DB) error {
 			for _, mm := range mapping {
 				claim := &models.ClaimModel{
 					Name:        mm.Name,
-					Description: mm.Desc,
+					Description: util.ConvertStringP(mm.Desc),
 				}
 				err := db.FirstOrCreate(claim, "name = ?", mm.Name).Error
 				if err != nil {

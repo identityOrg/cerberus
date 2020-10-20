@@ -3,6 +3,7 @@ package core
 import (
 	"github.com/google/uuid"
 	"github.com/identityOrg/cerberus/core/models"
+	"github.com/identityOrg/cerberus/util"
 	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
 	"golang.org/x/crypto/bcrypt"
@@ -56,7 +57,7 @@ func init() {
 func createTestSP() {
 	TestSP = &models.ServiceProviderModel{
 		Name:         "TestSP",
-		Description:  "A Service Provider for test",
+		Description:  util.ConvertStringP("A Service Provider for test"),
 		ClientID:     uuid.New().String(),
 		ClientSecret: uuid.New().String(),
 		Active:       true,

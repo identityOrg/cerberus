@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"github.com/identityOrg/cerberus/core/models"
+	"github.com/identityOrg/cerberus/util"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -15,7 +16,7 @@ func TestScopeClaimStoreServiceImpl_Combined(t *testing.T) {
 	var err error
 	var scope *models.ScopeModel
 	t.Run("insert", func(t *testing.T) {
-		scopeId, err = scopeClaimStore.CreateScope(ctx, "testscope", "A test scope")
+		scopeId, err = scopeClaimStore.CreateScope(ctx, "testscope", util.ConvertStringP("A test scope"))
 		if assert.NoError(t, err) {
 			assert.LessOrEqual(t, uint(1), scopeId)
 		}
@@ -28,13 +29,13 @@ func TestScopeClaimStoreServiceImpl_Combined(t *testing.T) {
 		}
 	})
 	t.Run("create claim", func(t *testing.T) {
-		claimId, err = scopeClaimStore.CreateClaim(ctx, "claim1", "claim one")
+		claimId, err = scopeClaimStore.CreateClaim(ctx, "claim1", util.ConvertStringP("claim one"))
 		if assert.NoError(t, err) {
 			assert.LessOrEqual(t, uint(1), claimId)
 		}
 	})
 	t.Run("add claim to scope", func(t *testing.T) {
-		claimId2, err := scopeClaimStore.CreateClaim(ctx, "claim2", "claim two")
+		claimId2, err := scopeClaimStore.CreateClaim(ctx, "claim2", util.ConvertStringP("claim two"))
 		if assert.NoError(t, err) {
 			if assert.LessOrEqual(t, uint(1), claimId) {
 				err = scopeClaimStore.AddClaimToScope(ctx, scopeId, claimId)

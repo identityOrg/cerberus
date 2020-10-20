@@ -73,11 +73,17 @@ func (s *SecretStoreServiceImpl) CreateChannel(ctx context.Context, name string,
 	return channel.ID, result.Error
 }
 
-func (s *SecretStoreServiceImpl) GetAllChannels(ctx context.Context) ([]*models.SecretChannelModel, error) {
+func (s *SecretStoreServiceImpl) GetAllChannels(ctx context.Context, page uint, pageSize uint) ([]*models.SecretChannelModel, uint, error) {
+	var total int64
 	db := s.Db.WithContext(ctx)
 	channels := make([]*models.SecretChannelModel, 0)
-	findResult := db.Find(channels)
-	return channels, findResult.Error
+	query := db.Model(&models.SecretChannelModel{})
+	err := query.Limit(int(pageSize)).Offset(int(pageSize * page)).Find(&channels).Error
+	if err != nil {
+		return nil, 0, err
+	}
+	query.Limit(-1).Offset(-1).Count(&total)
+	return channels, uint(total), nil
 }
 
 func (s *SecretStoreServiceImpl) GetChannel(ctx context.Context, channelId uint) (*models.SecretChannelModel, error) {

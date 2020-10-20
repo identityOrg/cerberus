@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"github.com/identityOrg/cerberus/core/models"
+	"github.com/identityOrg/cerberus/util"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -30,7 +31,8 @@ func TestSPStoreServiceImpl_CreateSP(t *testing.T) {
 		metadata := &models.ServiceProviderMetadata{
 			ApplicationType: "web",
 		}
-		spId, err := spService.CreateSP(ctx, "test create 1", "A SP created during test", metadata)
+		spId, err := spService.CreateSP(ctx, "test create 1",
+			util.ConvertStringP("A SP created during test"), metadata)
 		if assert.NoError(t, err) {
 			if assert.NotEqual(t, 0, spId) {
 				sp, err := spService.GetSP(ctx, spId)

@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/identityOrg/cerberus/core/models"
+	"github.com/identityOrg/cerberus/util"
 	"github.com/identityOrg/oidcsdk"
 	"gopkg.in/square/go-jose.v2"
 	"gorm.io/gorm"
@@ -28,7 +29,7 @@ func SetupDemoData(ormDB *gorm.DB, config *Config, sdkConfig *oidcsdk.Config, re
 	spService := NewSPStoreServiceImpl(ormDB, enc, enc)
 	existingSP, err := spService.FindSPByClientId(context.Background(), "client")
 	if err != nil {
-		spId, err := spService.CreateSP(context.Background(), "Demo Client", "Demo Client", spMetadata)
+		spId, err := spService.CreateSP(context.Background(), "Demo Client", util.ConvertStringP("Demo Client"), spMetadata)
 		if err != nil {
 			return err
 		}

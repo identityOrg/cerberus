@@ -26,7 +26,7 @@ func (s *SPStoreServiceImpl) FetchClientProfile(_ context.Context, clientID stri
 	return profile
 }
 
-func (s *SPStoreServiceImpl) CreateSP(ctx context.Context, clientName string, description string, metadata *models.ServiceProviderMetadata) (id uint, err error) {
+func (s *SPStoreServiceImpl) CreateSP(ctx context.Context, clientName string, description *string, metadata *models.ServiceProviderMetadata) (id uint, err error) {
 	user := &models.ServiceProviderModel{
 		Name:        clientName,
 		Description: description,
