@@ -1142,7 +1142,6 @@ components:
       required:
       - name
       - id
-      - description
       type: object
       properties:
         name:
@@ -1268,7 +1267,6 @@ components:
       required:
       - name
       - id
-      - description
       type: object
       properties:
         name:
