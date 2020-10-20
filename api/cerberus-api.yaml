@@ -873,7 +873,7 @@ paths:
     - name: id
       description: A unique identifier for a `SecretChannel`.
       schema:
-        type: string
+        type: integer
       in: path
       required: true
   /v1/api/secretchannels/find/name:
