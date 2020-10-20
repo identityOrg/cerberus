@@ -8,7 +8,8 @@ package setup
 import (
 	"context"
 	"github.com/google/wire"
-	"github.com/identityOrg/cerberus-core"
+	"github.com/identityOrg/cerberus/api"
+	"github.com/identityOrg/cerberus/core"
 	"github.com/identityOrg/cerberus/impl/handlers"
 	"github.com/identityOrg/cerberus/impl/session"
 	"github.com/identityOrg/cerberus/setup/config"
@@ -34,7 +35,7 @@ func CreateEchoServer() (*echo.Echo, error) {
 	secretConfig := config.NewSecretConfig()
 	sessionManager := session.NewManager(secretConfig)
 	dbConfig := config.NewDBConfig()
-	db, err := NewGormDB(dbConfig)
+	db, err := NewGormDB(dbConfig, serverConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +77,9 @@ func CreateEchoServer() (*echo.Echo, error) {
 	}
 	defaultManager := manager.NewDefaultManager(oidcsdkConfig, options)
 	loginHandler := handlers.NewLoginHandler(userStoreServiceImpl, sessionManager)
-	echoEcho := NewEchoServer(serverConfig, setupAppTemplates, defaultManager, loginHandler)
+	scopeClaimStoreServiceImpl := core.NewScopeClaimStoreServiceImpl(db)
+	cerberusAPI := api.NewCerberusAPI(scopeClaimStoreServiceImpl)
+	echoEcho := NewEchoServer(serverConfig, setupAppTemplates, oidcsdkConfig, defaultManager, loginHandler, cerberusAPI)
 	return echoEcho, nil
 }
 
@@ -85,7 +88,7 @@ func CreateEchoServer() (*echo.Echo, error) {
 var AppDependency = wire.NewSet(
 	NewGormDB,
 	NewEchoServer,
-	NewAppTemplates, core.ProviderSet, impl.DefaultManagerSet, impl.DefaultProcessorSet, config.NewCoreConfig, config.NewSDKConfig, config.NewDBConfig, config.NewSecretConfig, config.NewServerConfig, handlers.NewLoginHandler, session.NewManager, wire.Bind(new(oidcsdk.ISessionManager), new(*session.Manager)), NewCrypto, wire.Bind(new(core.ITextEncrypts), new(*Crypto)), wire.Bind(new(core.ITextDecrypts), new(*Crypto)),
+	NewAppTemplates, core.ProviderSet, api.ProviderSet, impl.DefaultManagerSet, impl.DefaultProcessorSet, config.NewCoreConfig, config.NewSDKConfig, config.NewDBConfig, config.NewSecretConfig, config.NewServerConfig, handlers.NewLoginHandler, session.NewManager, wire.Bind(new(oidcsdk.ISessionManager), new(*session.Manager)), NewCrypto, wire.Bind(new(core.ITextEncrypts), new(*Crypto)), wire.Bind(new(core.ITextDecrypts), new(*Crypto)),
 )
 
 type Crypto struct{}

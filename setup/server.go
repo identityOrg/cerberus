@@ -1,6 +1,8 @@
 package setup
 
 import (
+	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/identityOrg/cerberus/api"
 	"github.com/identityOrg/cerberus/impl/handlers"
 	"github.com/identityOrg/cerberus/impl/handlers/demo"
 	"github.com/identityOrg/cerberus/setup/config"
@@ -12,8 +14,8 @@ import (
 	"net/http"
 )
 
-func NewEchoServer(serverConfig *config.ServerConfig, templates *AppTemplates,
-	manager oidcsdk.IManager, handler *handlers.LoginHandler) *echo.Echo {
+func NewEchoServer(serverConfig *config.ServerConfig, templates *AppTemplates, config2 *oidcsdk.Config,
+	manager oidcsdk.IManager, handler *handlers.LoginHandler, si api.ServerInterface) *echo.Echo {
 	e := echo.New()
 	e.Debug = serverConfig.Debug
 
@@ -36,6 +38,22 @@ func NewEchoServer(serverConfig *config.ServerConfig, templates *AppTemplates,
 
 	if serverConfig.Demo {
 		demo.Setup(e)
+	}
+
+	if serverConfig.Api {
+		api.RegisterHandlers(e, si)
+		e.GET("/v1/spec", func(context echo.Context) error {
+			swagger, err := api.GetSwagger()
+			if err != nil {
+				return err
+			}
+			s := &openapi3.Server{
+				URL:         config2.Issuer,
+				Description: "Primary Server",
+			}
+			swagger.Servers = append(swagger.Servers, s)
+			return context.JSON(http.StatusOK, swagger)
+		})
 	}
 
 	return e

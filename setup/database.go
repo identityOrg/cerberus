@@ -9,15 +9,24 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewGormDB(config *config.DBConfig) (*gorm.DB, error) {
+func NewGormDB(config *config.DBConfig, serverConfig *config.ServerConfig) (*gorm.DB, error) {
+	var orm *gorm.DB
+	var err error
 	switch config.Driver {
 	case "sqlite3":
-		return gorm.Open(sqlite.Open(config.DSN), &gorm.Config{})
+		orm, err = gorm.Open(sqlite.Open(config.DSN), &gorm.Config{})
 	case "mysql":
-		return gorm.Open(mysql.Open(config.DSN), &gorm.Config{})
+		orm, err = gorm.Open(mysql.Open(config.DSN), &gorm.Config{})
 	case "postgres":
-		return gorm.Open(postgres.Open(config.DSN), &gorm.Config{})
+		orm, err = gorm.Open(postgres.Open(config.DSN), &gorm.Config{})
 	default:
-		return nil, fmt.Errorf("unknown sql dialect/driver %s", config.Driver)
+		err = fmt.Errorf("unknown sql dialect/driver %s", config.Driver)
 	}
+	if err != nil {
+		return nil, err
+	}
+	if serverConfig.Debug {
+		orm = orm.Debug()
+	}
+	return orm, nil
 }

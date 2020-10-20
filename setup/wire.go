@@ -5,7 +5,8 @@ package setup
 import (
 	"context"
 	"github.com/google/wire"
-	core "github.com/identityOrg/cerberus-core"
+	"github.com/identityOrg/cerberus/api"
+	"github.com/identityOrg/cerberus/core"
 	"github.com/identityOrg/cerberus/impl/handlers"
 	"github.com/identityOrg/cerberus/impl/session"
 	"github.com/identityOrg/cerberus/setup/config"
@@ -19,6 +20,7 @@ var AppDependency = wire.NewSet(
 	NewEchoServer,
 	NewAppTemplates,
 	core.ProviderSet,
+	api.ProviderSet,
 	impl.DefaultManagerSet,
 	impl.DefaultProcessorSet,
 	config.NewCoreConfig,

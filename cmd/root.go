@@ -81,7 +81,12 @@ func initConfig() {
 }
 
 func setDefaultConfiguration() {
-	viper.SetDefault("server", map[string]interface{}{"port": "localhost:8080", "debug": false, "demo": false})
+	viper.SetDefault("server", map[string]interface{}{
+		"port":  "localhost:8080",
+		"debug": false,
+		"demo":  false,
+		"api":   true,
+	})
 	viper.SetDefault("db", map[string]string{"driver": "sqlite3", "dsn": "test.db"})
 	viper.SetDefault("secret.SessionSecret", "jdhfbwjhebajwhevbahwevbahevbajwhevblawev")
 	viper.SetDefault("secret.TokenSecret", "jhkawhjebawhebvajebvkjahebvkjahebvkjebvj")

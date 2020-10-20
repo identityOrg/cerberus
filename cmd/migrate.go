@@ -16,7 +16,7 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/identityOrg/cerberus-core"
+	"github.com/identityOrg/cerberus/core"
 	"github.com/identityOrg/cerberus/setup"
 	config2 "github.com/identityOrg/cerberus/setup/config"
 	"github.com/spf13/cobra"
@@ -51,8 +51,9 @@ func init() {
 
 func runMigration(_ *cobra.Command, arg []string) {
 	config := config2.NewDBConfig()
+	serverConfig := config2.NewServerConfig()
 	_ = viper.UnmarshalKey("store", &config)
-	if ormDB, err := setup.NewGormDB(config); err != nil {
+	if ormDB, err := setup.NewGormDB(config, serverConfig); err != nil {
 		log.Fatalf("error opening GORM of type %s and DSN %s", config.Driver, config.DSN)
 		return
 	} else {

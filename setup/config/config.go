@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	core "github.com/identityOrg/cerberus-core"
+	"github.com/identityOrg/cerberus/core"
 	"github.com/identityOrg/oidcsdk"
 	"github.com/spf13/viper"
 )
@@ -22,6 +22,7 @@ type ServerConfig struct {
 	Port  string `mapstructure:"port"`
 	Debug bool   `mapstructure:"debug"`
 	Demo  bool   `mapstructure:"demo"`
+	Api   bool   `mapstructure:"api"`
 }
 
 func NewServerConfig() *ServerConfig {
