@@ -1142,6 +1142,7 @@ components:
       required:
       - name
       - id
+      - description
       type: object
       properties:
         name:
@@ -1267,6 +1268,7 @@ components:
       required:
       - name
       - id
+      - description
       type: object
       properties:
         name:
@@ -1394,11 +1396,18 @@ components:
       description: An object representing one service provider.
       required:
       - id
+      - name
       type: object
       properties:
         id:
           description: Identifier of the provider.
           type: integer
+        name:
+          description: Service provider name
+          type: string
+        description:
+          description: A description of the service provider
+          type: string
     ServiceProviderSummaryPage:
       description: An object representing one service provider.
       type: object
@@ -1499,6 +1508,9 @@ components:
             type: array
             items:
               type: string
+          description:
+            description: A description of a service provider
+            type: string
       - $ref: '#/components/schemas/ServiceProviderInfo'
       - $ref: '#/components/schemas/ServiceProviderConfig'
     ServiceProviderInfo:
@@ -1704,7 +1716,6 @@ components:
           - enc
           type: string
         validity_day:
-          format: int32
           description: How mant days the key will be valid, when generated or renewed
           type: integer
         id:
