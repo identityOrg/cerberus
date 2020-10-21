@@ -80,30 +80,30 @@ type ServiceProviderMetadata struct {
 	Scopes                       []string               `json:"scopes,omitempty"`
 	GrantTypes                   []string               `json:"grant_types,omitempty"`
 	ApplicationType              string                 `json:"application_type,omitempty"`
-	Contacts                     []string               `json:"contacts,omitempty"`
-	LogoUri                      string                 `json:"logo_uri,omitempty"`
-	ClientUri                    string                 `json:"client_uri,omitempty"`
-	PolicyUri                    string                 `json:"policy_uri,omitempty"`
+	Contacts                     *[]string              `json:"contacts,omitempty"`
+	LogoUri                      *string                `json:"logo_uri,omitempty"`
+	ClientUri                    *string                `json:"client_uri,omitempty"`
+	PolicyUri                    *string                `json:"policy_uri,omitempty"`
 	TosUri                       string                 `json:"tos_uri,omitempty"`
-	JwksUri                      string                 `json:"jwks_uri,omitempty"`
+	JwksUri                      *string                `json:"jwks_uri,omitempty"`
 	Jwks                         *jose.JSONWebKeySet    `json:"jwks,omitempty"`
 	SectorIdentifierUri          string                 `json:"sector_identifier_uri,omitempty"`
 	SubjectType                  string                 `json:"subject_type,omitempty"`
 	IdTokenSignedResponseAlg     string                 `json:"id_token_signed_response_alg,omitempty"`
-	IdTokenEncryptedResponseAlg  string                 `json:"id_token_encrypted_response_alg,omitempty"`
-	IdTokenEncryptedResponseEnc  string                 `json:"id_token_encrypted_response_enc,omitempty"`
-	UserinfoSignedResponseAlg    string                 `json:"userinfo_signed_response_alg,omitempty"`
-	UserinfoEncryptedResponseAlg string                 `json:"userinfo_encrypted_response_alg,omitempty"`
-	UserinfoEncryptedResponseEnc string                 `json:"userinfo_encrypted_response_enc,omitempty"`
-	RequestObjectSigningAlg      string                 `json:"request_object_signing_alg,omitempty"`
-	RequestObjectEncryptionAlg   string                 `json:"request_object_encryption_alg,omitempty"`
-	RequestObjectEncryptionEnc   string                 `json:"request_object_encryption_enc,omitempty"`
+	IdTokenEncryptedResponseAlg  *string                `json:"id_token_encrypted_response_alg,omitempty"`
+	IdTokenEncryptedResponseEnc  *string                `json:"id_token_encrypted_response_enc,omitempty"`
+	UserinfoSignedResponseAlg    *string                `json:"userinfo_signed_response_alg,omitempty"`
+	UserinfoEncryptedResponseAlg *string                `json:"userinfo_encrypted_response_alg,omitempty"`
+	UserinfoEncryptedResponseEnc *string                `json:"userinfo_encrypted_response_enc,omitempty"`
+	RequestObjectSigningAlg      *string                `json:"request_object_signing_alg,omitempty"`
+	RequestObjectEncryptionAlg   *string                `json:"request_object_encryption_alg,omitempty"`
+	RequestObjectEncryptionEnc   *string                `json:"request_object_encryption_enc,omitempty"`
 	TokenEndpointAuthMethod      string                 `json:"token_endpoint_auth_method,omitempty"`
-	TokenEndpointAuthSigningAlg  string                 `json:"token_endpoint_auth_signing_alg,omitempty"`
-	DefaultMaxAge                int                    `json:"default_max_age,omitempty"`
-	RequireAuthTime              bool                   `json:"require_auth_time,omitempty"`
-	DefaultAcrValues             []string               `json:"default_acr_values,omitempty"`
-	InitiateLoginUri             string                 `json:"initiate_login_uri,omitempty"`
+	TokenEndpointAuthSigningAlg  *string                `json:"token_endpoint_auth_signing_alg,omitempty"`
+	DefaultMaxAge                *int                   `json:"default_max_age,omitempty"`
+	RequireAuthTime              *bool                  `json:"require_auth_time,omitempty"`
+	DefaultAcrValues             *[]string              `json:"default_acr_values,omitempty"`
+	InitiateLoginUri             *string                `json:"initiate_login_uri,omitempty"`
 	RequestUris                  []string               `json:"request_uris,omitempty"`
 	OtherAttributes              map[string]interface{} `json:"other_attributes,omitempty"`
 }
