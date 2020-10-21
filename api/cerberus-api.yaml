@@ -1660,7 +1660,7 @@ components:
             ago than the specified number of seconds. The max_age request parameter
             overrides this default value. If omitted, no default Maximum Authentication
             Age is specified.
-          type: string
+          type: integer
         require_auth_time:
           description: Boolean value specifying whether the auth_time Claim in the
             ID Token is REQUIRED. It is REQUIRED when the value is true. (If this
@@ -1668,7 +1668,21 @@ components:
             individual Claim for the ID Token using the claims request parameter described
             in Section 5.5.1 of OpenID Connect Core 1.0 [OpenID.Core].) If omitted,
             the default value is false.
-          type: string
+          type: boolean
+        default_acr_values:
+          description: Default requested Authentication Context Class Reference values.
+            Array of strings that specifies the default acr values that the OP is
+            being requested to use for processing requests from this Client, with
+            the values appearing in order of preference. The Authentication Context
+            Class satisfied by the authentication performed is returned as the acr
+            Claim Value in the issued ID Token. The acr Claim is requested as a Voluntary
+            Claim by this parameter. The acr_values_supported discovery element contains
+            a list of the supported acr values supported by this server. Values specified
+            in the acr_values request parameter or an individual acr Claim request
+            override these default values.
+          type: array
+          items:
+            type: string
     SecretChannel:
       title: Root Type for SecretChannel
       description: A secret key channel for a particular
