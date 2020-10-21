@@ -974,6 +974,12 @@ components:
     UserSummary:
       title: Root Type for UserSummary
       description: A summary representation of user object
+      required:
+      - id
+      - email
+      - blocked
+      - username
+      - active
       type: object
       properties:
         username:
@@ -988,11 +994,15 @@ components:
         blocked:
           description: User is blocked by invalid attempt
           type: boolean
+        id:
+          description: Internal identifier of the user
+          type: integer
       example:
-        username: user1
-        email: user1@domain.com
+        username: some text
+        email: some text
         active: true
-        blocked: false
+        blocked: true
+        id: 24
     UserSummaryPage:
       description: A page of user summary
       type: object
@@ -1376,6 +1386,7 @@ components:
       required:
       - id
       - name
+      - public
       type: object
       properties:
         id:
@@ -1387,6 +1398,10 @@ components:
         description:
           description: A description of the service provider
           type: string
+        public:
+          description: Wheather the `ServiceProvider` is a public SP, which does not
+            require authentication.
+          type: boolean
     ServiceProviderSummaryPage:
       description: An object representing one service provider.
       type: object
@@ -1423,7 +1438,6 @@ components:
         - redirect_uris
         - grant_types
         - application_type
-        - name
         - scope
         type: object
         properties:
@@ -1470,28 +1484,14 @@ components:
             - web
             - native
             type: string
-          name:
-            description: Name of the Client to be presented to the End-User. If desired,
-              representation of this Claim in different languages and scripts is represented
-              as described in Section 2.1.
-            type: string
-          request_uris:
-            description: |-
-              Array of request_uri values that are pre-registered by the RP for use at the OP. Servers MAY cache the contents of the files referenced by these URIs and not retrieve them at the time they are used in a request. OPs can require that request_uri values used be pre-registered with the require_request_uri_registration discovery parameter.
-              If the contents of the request file could ever change, these URI values SHOULD include the base64url encoded SHA-256 hash value of the file contents referenced by the URI as the value of the URI fragment. If the fragment value used for a URI changes, that signals the server that its cached value for that URI with the old fragment value is no longer valid.
-            type: array
-            items:
-              type: string
           scope:
             description: Approved oauth scopes for the service providers
             type: array
             items:
               type: string
-          description:
-            description: A description of a service provider
-            type: string
       - $ref: '#/components/schemas/ServiceProviderInfo'
       - $ref: '#/components/schemas/ServiceProviderConfig'
+      - $ref: '#/components/schemas/ServiceProviderSummary'
     ServiceProviderInfo:
       description: Additional information related to service provider.
       type: object
@@ -1680,6 +1680,13 @@ components:
             a list of the supported acr values supported by this server. Values specified
             in the acr_values request parameter or an individual acr Claim request
             override these default values.
+          type: array
+          items:
+            type: string
+        request_uris:
+          description: |-
+            Array of request_uri values that are pre-registered by the RP for use at the OP. Servers MAY cache the contents of the files referenced by these URIs and not retrieve them at the time they are used in a request. OPs can require that request_uri values used be pre-registered with the require_request_uri_registration discovery parameter.
+            If the contents of the request file could ever change, these URI values SHOULD include the base64url encoded SHA-256 hash value of the file contents referenced by the URI as the value of the URI fragment. If the fragment value used for a URI changes, that signals the server that its cached value for that URI with the old fragment value is no longer valid.
           type: array
           items:
             type: string
