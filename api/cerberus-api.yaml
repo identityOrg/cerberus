@@ -766,7 +766,7 @@ paths:
       - name: client_id
         description: service provider client id
         schema:
-          type: integer
+          type: string
         in: query
       responses:
         "200":
