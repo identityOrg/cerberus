@@ -78,7 +78,7 @@ func CreateEchoServer() (*echo.Echo, error) {
 	defaultManager := manager.NewDefaultManager(oidcsdkConfig, options)
 	loginHandler := handlers.NewLoginHandler(userStoreServiceImpl, sessionManager)
 	scopeClaimStoreServiceImpl := core.NewScopeClaimStoreServiceImpl(db)
-	cerberusAPI := api.NewCerberusAPI(scopeClaimStoreServiceImpl, secretStoreServiceImpl, spStoreServiceImpl)
+	cerberusAPI := api.NewCerberusAPI(scopeClaimStoreServiceImpl, secretStoreServiceImpl, spStoreServiceImpl, userStoreServiceImpl)
 	echoEcho := NewEchoServer(serverConfig, setupAppTemplates, oidcsdkConfig, defaultManager, loginHandler, cerberusAPI)
 	return echoEcho, nil
 }
