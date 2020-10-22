@@ -12,6 +12,19 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+- url: '{scheme}://{domain}:{port}'
+  description: API Server
+  variables:
+    scheme:
+      default: http
+      description: HTTP protocol scheme
+    domain:
+      default: localhost
+      description: domain of the server
+    port:
+      default: "8080"
+      description: port of the server
 paths:
   /v1/api/scopes/{id}:
     summary: Path used to manage a single Scope.
@@ -106,7 +119,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserStatusUpdate'
+              $ref: '#/components/schemas/StatusUpdate'
         required: true
       tags:
       - superuser
@@ -534,20 +547,17 @@ paths:
       summary: Retrieves the existing credentials
       description: This API retrieves the existing credentials as the service provider
         has. This API can noly be called for a private service provider.
-    put:
+    post:
       requestBody:
-        description: No request body
-        required: false
+        description: Request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegenerateCredentials'
+        required: true
       tags:
-      - superuser
       - service-provider
-      parameters:
-      - name: refresh_id
-        description: Indicates wheather to refresh the client_id of not. Default is
-          `false`.
-        schema:
-          type: boolean
-        in: query
+      - superuser
       responses:
         "200":
           content:
@@ -556,8 +566,8 @@ paths:
                 $ref: '#/components/schemas/ServiceProviderCredentials'
           description: Success Response
       operationId: generate-credentials
-      summary: Update a Client
-      description: Updates an existing `Client`.
+      summary: Generate the credentials
+      description: Generate the credentials
     parameters:
     - name: id
       description: A unique identifier for a `Client`.
@@ -682,20 +692,6 @@ paths:
   /v1/api/scopes/{id}/claim/{claimId}:
     summary: This path is for claim configuration of scope
     description: This path is for claim configuration of scope
-    put:
-      requestBody:
-        description: Only the id field is nough for claim
-        required: false
-      tags:
-      - claim
-      - scope
-      - superuser
-      responses:
-        "204":
-          description: Success
-      operationId: add-claim-to-scope
-      summary: Add one claim to scope
-      description: Add one claim to scope
     delete:
       tags:
       - claim
@@ -716,36 +712,6 @@ paths:
       required: true
     - name: claimId
       description: claim to to add or remove
-      schema:
-        type: integer
-      in: path
-      required: true
-  /v1/api/serviceproviders/{id}/activate:
-    summary: Activate or deactivate a service provider
-    description: Activate or deactivate a service provider
-    post:
-      tags:
-      - service-provider
-      - superuser
-      responses:
-        "202":
-          description: Success
-      operationId: activate-service-provider
-      summary: Activate a service provider
-      description: Activate a service provider
-    delete:
-      tags:
-      - service-provider
-      - superuser
-      responses:
-        "202":
-          description: Success
-      operationId: deactivate-service-provider
-      summary: deactivate service provider
-      description: deactivate service provider
-    parameters:
-    - name: id
-      description: service provider id
       schema:
         type: integer
       in: path
@@ -969,6 +935,65 @@ paths:
       operationId: create-secret-channel
       summary: Create a SecretChannel
       description: Creates a new instance of a `SecretChannel`.
+  /v1/api/serviceproviders/{id}/status:
+    summary: Activate or deactivate a service provider
+    description: Activate or deactivate a service provider
+    post:
+      requestBody:
+        description: Status to update to
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatusUpdate'
+            examples:
+              success:
+                value:
+                  active: true
+        required: true
+      tags:
+      - service-provider
+      - superuser
+      responses:
+        "202":
+          description: Success
+      operationId: update-service-provider-status
+      summary: Activate or Deactivate a service provider
+      description: Activate or Deactivate a service provider
+    parameters:
+    - name: id
+      description: service provider id
+      schema:
+        type: integer
+      in: path
+      required: true
+  /v1/api/scopes/{id}/claim:
+    summary: Add a claim to a scope
+    description: Add a claim to a scope
+    post:
+      requestBody:
+        description: Claim id request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddClaimToScope'
+        required: true
+      tags:
+      - superuser
+      - scope
+      - claim
+      responses:
+        "202":
+          description: Success
+      operationId: add-claim-to-scope
+      summary: Add a claim to a scope
+      description: Add a claim to a scope
+    parameters:
+    - name: id
+      description: Scope ID
+      schema:
+        type: integer
+      in: path
+      required: true
 components:
   schemas:
     UserSummary:
@@ -1073,19 +1098,6 @@ components:
         middle_name: some text
         nickname: some text
         preferred_username: some text
-    Error:
-      description: An error response object
-      required:
-      - error_code
-      - message
-      type: object
-      properties:
-        message:
-          description: Detail description
-          type: string
-        error_code:
-          description: Error code
-          type: string
     ChangePasswordRequest:
       description: A change password request object
       required:
@@ -1242,17 +1254,6 @@ components:
           middle_name: some text
           nickname: some text
           preferred_username: some text
-    UserStatusUpdate:
-      description: A update status request
-      required:
-      - active
-      type: object
-      properties:
-        active:
-          description: New status to change to.
-          type: boolean
-      example:
-        active: true
     Claim:
       description: A claim configuration object
       required:
@@ -1840,12 +1841,58 @@ components:
           algorithm: some text
           key_usage: enc
           id: 15
+    ApiError:
+      description: An error response object
+      required:
+      - error_code
+      - message
+      type: object
+      properties:
+        message:
+          description: Detail description
+          type: string
+        error_code:
+          description: Error code
+          type: string
+    StatusUpdate:
+      description: A update status request
+      required:
+      - active
+      type: object
+      properties:
+        active:
+          description: New status to change to.
+          type: boolean
+      example:
+        active: true
+    RegenerateCredentials:
+      title: Root Type for RegenerateCredentials
+      description: A request object for updating or or re-generating the credentials
+      type: object
+      properties:
+        refresh_id:
+          description: Wheather to regenerate the client id too
+          type: boolean
+      example:
+        refresh_id: true
+    AddClaimToScope:
+      title: Root Type for AddClaimToScope
+      description: Add a claim to the scope
+      required:
+      - claim_id
+      type: object
+      properties:
+        claim_id:
+          description: Claim id to add
+          type: integer
+      example:
+        claim_id: 10
   responses:
     UnAuthorized:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: '#/components/schemas/ApiError'
       description: Client is un authorized to access the request
   securitySchemes:
     OAuth:
