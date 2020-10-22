@@ -1156,57 +1156,6 @@ components:
         id:
           description: Internal identifier of the scope
           type: integer
-    User:
-      description: A detail user object information
-      type: object
-      allOf:
-      - required:
-        - username
-        - id
-        type: object
-        properties:
-          username:
-            description: Username for login
-            type: string
-          address:
-            $ref: '#/components/schemas/UserAddress'
-            description: End-User's preferred postal address. The value of the address
-              member is a JSON [RFC4627] structure containing some or all of the members
-              defined in Section 5.1.1.
-          gender:
-            description: End-User's gender. Values defined by this specification are
-              female and male. Other values MAY be used when neither of the defined
-              values are applicable.
-            type: string
-          birthdate:
-            format: date
-            description: End-User's birthday, represented as an ISO 8601:2004 [ISO8601‑2004]
-              YYYY-MM-DD format. The year MAY be 0000, indicating that it is omitted.
-              To represent only the year, YYYY format is allowed. Note that depending
-              on the underlying platform's date related function, providing just year
-              can result in varying month and day, so the implementers need to take
-              this factor into account to correctly process the dates.
-            type: string
-          zoneinfo:
-            description: String from zoneinfo [zoneinfo] time zone database representing
-              the End-User's time zone. For example, Europe/Paris or America/Los_Angeles.
-            type: string
-          locale:
-            description: End-User's locale, represented as a BCP47 [RFC5646] language
-              tag. This is typically an ISO 639-1 Alpha-2 [ISO639‑1] language code
-              in lowercase and an ISO 3166-1 Alpha-2 [ISO3166‑1] country code in uppercase,
-              separated by a dash. For example, en-US or fr-CA. As a compatibility
-              note, some implementations have used an underscore as the separator
-              rather than a dash, for example, en_US; Relying Parties MAY choose to
-              accept this locale syntax as well.
-            type: string
-          id:
-            description: User identifier.
-            type: integer
-      - $ref: '#/components/schemas/UserName'
-      - $ref: '#/components/schemas/UserProfile'
-      - $ref: '#/components/schemas/UserContact'
-      - $ref: '#/components/schemas/UserAddress'
     UserRecoverPassword:
       description: A request obje to initiate password recovery
       required:
@@ -1284,30 +1233,6 @@ components:
             items:
               $ref: '#/components/schemas/Claim'
       - $ref: '#/components/schemas/Page'
-    UserProfile:
-      description: An object representing user profile infos.
-      type: object
-      properties:
-        profile:
-          description: URL of the End-User's profile page. The contents of this Web
-            page SHOULD be about the End-User.
-          type: string
-        picture:
-          description: URL of the End-User's profile picture. This URL MUST refer
-            to an image file (for example, a PNG, JPEG, or GIF image file), rather
-            than to a Web page containing an image. Note that this URL SHOULD specifically
-            reference a profile photo of the End-User suitable for displaying when
-            describing the End-User, rather than an arbitrary photo taken by the End-User.
-          type: string
-        website:
-          description: URL of the End-User's Web page or blog. This Web page SHOULD
-            contain information published by the End-User or an organization that
-            the End-User is affiliated with.
-          type: string
-      example:
-        profile: some text
-        picture: some text
-        website: some text
     UserAddress:
       description: End-User's preferred postal address. The value of the address member
         is a JSON [RFC4627] structure containing some or all of the members defined
@@ -1431,266 +1356,6 @@ components:
         client_id:
           description: Client identifier
           type: string
-    ServiceProvider:
-      description: An object representing one service provider.
-      type: object
-      allOf:
-      - required:
-        - redirect_uris
-        - grant_types
-        - application_type
-        - scope
-        type: object
-        properties:
-          redirect_uris:
-            description: Array of Redirection URI values used by the Client. One of
-              these registered Redirection URI values MUST exactly match the redirect_uri
-              parameter value used in each Authorization Request, with the matching
-              performed as described in Section 6.2.1 of [RFC3986] (Simple String
-              Comparison).
-            type: array
-            items:
-              type: string
-          grant_types:
-            description: "JSON array containing a list of the OAuth 2.0 Grant Types\
-              \ that the Client is declaring that it will restrict itself to using.\
-              \ The Grant Type values used by \n\nOpenID Connect are:\n1. authorization_code:\
-              \ The Authorization Code Grant Type described in OAuth 2.0 Section 4.1.\n\
-              1. implicit: The Implicit Grant Type described in OAuth 2.0 Section\
-              \ 4.2.\n1. refresh_token: The Refresh Token Grant Type described in\
-              \ OAuth 2.0 Section 6.\n\nThe following table lists the correspondence\
-              \ between response_type values that the Client will use and grant_type\
-              \ values that MUST be included in the registered grant_types list:\n\
-              \n1. code: authorization_code\n1. id_token: implicit\n1. token id_token:\
-              \ implicit\n1. code id_token: authorization_code, implicit\n1. code\
-              \ token: authorization_code, implicit\n1. code token id_token: authorization_code,\
-              \ implicit\n\nIf omitted, the default is that the Client will use only\
-              \ the authorization_code Grant Type."
-            type: array
-            items:
-              type: string
-          application_type:
-            description: 'Kind of the application. The default, if omitted, is web.
-              The defined values are native or web. Web Clients using the OAuth Implicit
-              Grant Type MUST only register URLs using the https scheme as redirect_uris;
-              they MUST NOT use localhost as the hostname. Native Clients MUST only
-              register redirect_uris using custom URI schemes or URLs using the http:
-              scheme with localhost as the hostname. Authorization Servers MAY place
-              additional constraints on Native Clients. Authorization Servers MAY
-              reject Redirection URI values using the http scheme, other than the
-              localhost case for Native Clients. The Authorization Server MUST verify
-              that all the registered redirect_uris conform to these constraints.
-              This prevents sharing a Client ID across different types of Clients.'
-            enum:
-            - web
-            - native
-            type: string
-          scope:
-            description: Approved oauth scopes for the service providers
-            type: array
-            items:
-              type: string
-      - $ref: '#/components/schemas/ServiceProviderInfo'
-      - $ref: '#/components/schemas/ServiceProviderConfig'
-      - $ref: '#/components/schemas/ServiceProviderSummary'
-    ServiceProviderInfo:
-      description: Additional information related to service provider.
-      type: object
-      properties:
-        logo_uri:
-          description: URL that references a logo for the Client application. If present,
-            the server SHOULD display this image to the End-User during approval.
-            The value of this field MUST point to a valid image file. If desired,
-            representation of this Claim in different languages and scripts is represented
-            as described in Section 2.1.
-          type: string
-        contacts:
-          description: Array of e-mail addresses of people responsible for this Client.
-            This might be used by some providers to enable a Web user interface to
-            modify the Client information.
-          type: array
-          items:
-            type: string
-        client_uri:
-          description: URL of the home page of the Client. The value of this field
-            MUST point to a valid Web page. If present, the server SHOULD display
-            this URL to the End-User in a followable fashion. If desired, representation
-            of this Claim in different languages and scripts is represented as described
-            in Section 2.1.
-          type: string
-        policy_uri:
-          description: URL that the Relying Party Client provides to the End-User
-            to read about the how the profile data will be used. The value of this
-            field MUST point to a valid web page. The OpenID Provider SHOULD display
-            this URL to the End-User if it is given. If desired, representation of
-            this Claim in different languages and scripts is represented as described
-            in Section 2.1.
-          type: string
-        tos_uri:
-          description: URL that the Relying Party Client provides to the End-User
-            to read about the Relying Party's terms of service. The value of this
-            field MUST point to a valid web page. The OpenID Provider SHOULD display
-            this URL to the End-User if it is given. If desired, representation of
-            this Claim in different languages and scripts is represented as described
-            in Section 2.1.
-          type: string
-        initiate_login_uri:
-          description: URI using the https scheme that a third party can use to initiate
-            a login by the RP, as specified in Section 4 of OpenID Connect Core 1.0
-            [OpenID.Core]. The URI MUST accept requests via both GET and POST. The
-            Client MUST understand the login_hint and iss parameters and SHOULD support
-            the target_link_uri parameter.
-          type: string
-    ServiceProviderConfig:
-      description: A model to represent, service provider specific configurations
-        possible
-      type: object
-      properties:
-        jwks_uri:
-          description: URL for the Client's JSON Web Key Set [JWK] document. If the
-            Client signs requests to the Server, it contains the signing key(s) the
-            Server uses to validate signatures from the Client. The JWK Set MAY also
-            contain the Client's encryption keys(s), which are used by the Server
-            to encrypt responses to the Client. When both signing and encryption keys
-            are made available, a use (Key Use) parameter value is REQUIRED for all
-            keys in the referenced JWK Set to indicate each key's intended usage.
-            Although some algorithms allow the same key to be used for both signatures
-            and encryption, doing so is NOT RECOMMENDED, as it is less secure. The
-            JWK x5c parameter MAY be used to provide X.509 representations of keys
-            provided. When used, the bare key values MUST still be present and MUST
-            match those in the certificate.
-          type: string
-        jwks:
-          description: Client's JSON Web Key Set [JWK] document, passed by value.
-            The semantics of the jwks parameter are the same as the jwks_uri parameter,
-            other than that the JWK Set is passed by value, rather than by reference.
-            This parameter is intended only to be used by Clients that, for some reason,
-            are unable to use the jwks_uri parameter, for instance, by native applications
-            that might not have a location to host the contents of the JWK Set. If
-            a Client can use jwks_uri, it MUST NOT use jwks. One significant downside
-            of jwks is that it does not enable key rotation (which jwks_uri does,
-            as described in Section 10 of OpenID Connect Core 1.0 [OpenID.Core]).
-            The jwks_uri and jwks parameters MUST NOT be used together.
-          type: string
-        id_token_signed_response_alg:
-          description: JWS alg algorithm [JWA] REQUIRED for signing UserInfo Responses.
-            If this is specified, the response will be JWT [JWT] serialized, and signed
-            using JWS. The default, if omitted, is for the UserInfo Response to return
-            the Claims as a UTF-8 encoded JSON object using the application/json content-type.
-          type: string
-        id_token_encrypted_response_alg:
-          description: JWE alg algorithm [JWA] REQUIRED for encrypting the ID Token
-            issued to this Client. If this is requested, the response will be signed
-            then encrypted, with the result being a Nested JWT, as defined in [JWT].
-            The default, if omitted, is that no encryption is performed.
-          type: string
-        id_token_encrypted_response_enc:
-          description: JWE enc algorithm [JWA] REQUIRED for encrypting the ID Token
-            issued to this Client. If id_token_encrypted_response_alg is specified,
-            the default for this value is A128CBC-HS256. When id_token_encrypted_response_enc
-            is included, id_token_encrypted_response_alg MUST also be provided.
-          type: string
-        userinfo_signed_response_alg:
-          description: JWS alg algorithm [JWA] REQUIRED for signing UserInfo Responses.
-            If this is specified, the response will be JWT [JWT] serialized, and signed
-            using JWS. The default, if omitted, is for the UserInfo Response to return
-            the Claims as a UTF-8 encoded JSON object using the application/json content-type.
-          type: string
-        userinfo_encrypted_response_alg:
-          description: JWE [JWE] alg algorithm [JWA] REQUIRED for encrypting UserInfo
-            Responses. If both signing and encryption are requested, the response
-            will be signed then encrypted, with the result being a Nested JWT, as
-            defined in [JWT]. The default, if omitted, is that no encryption is performed.
-          type: string
-        userinfo_encrypted_response_enc:
-          description: JWE enc algorithm [JWA] REQUIRED for encrypting UserInfo Responses.
-            If userinfo_encrypted_response_alg is specified, the default for this
-            value is A128CBC-HS256. When userinfo_encrypted_response_enc is included,
-            userinfo_encrypted_response_alg MUST also be provided.
-          type: string
-        request_object_signing_alg:
-          description: JWS [JWS] alg algorithm [JWA] that MUST be used for signing
-            Request Objects sent to the OP. All Request Objects from this Client MUST
-            be rejected, if not signed with this algorithm. Request Objects are described
-            in Section 6.1 of OpenID Connect Core 1.0 [OpenID.Core]. This algorithm
-            MUST be used both when the Request Object is passed by value (using the
-            request parameter) and when it is passed by reference (using the request_uri
-            parameter). Servers SHOULD support RS256. The value none MAY be used.
-            The default, if omitted, is that any algorithm supported by the OP and
-            the RP MAY be used.
-          type: string
-        request_object_encryption_alg:
-          description: ' JWE [JWE] alg algorithm [JWA] the RP is declaring that it
-            may use for encrypting Request Objects sent to the OP. This parameter
-            SHOULD be included when symmetric encryption will be used, since this
-            signals to the OP that a client_secret value needs to be returned from
-            which the symmetric key will be derived, that might not otherwise be returned.
-            The RP MAY still use other supported encryption algorithms or send unencrypted
-            Request Objects, even when this parameter is present. If both signing
-            and encryption are requested, the Request Object will be signed then encrypted,
-            with the result being a Nested JWT, as defined in [JWT]. The default,
-            if omitted, is that the RP is not declaring whether it might encrypt any
-            Request Objects.'
-          type: string
-        request_object_encryption_enc:
-          description: JWE enc algorithm [JWA] the RP is declaring that it may use
-            for encrypting Request Objects sent to the OP. If request_object_encryption_alg
-            is specified, the default for this value is A128CBC-HS256. When request_object_encryption_enc
-            is included, request_object_encryption_alg MUST also be provided.
-          type: string
-        token_endpoint_auth_method:
-          description: Requested Client Authentication method for the Token Endpoint.
-            The options are client_secret_post, client_secret_basic, client_secret_jwt,
-            private_key_jwt, and none, as described in Section 9 of OpenID Connect
-            Core 1.0 [OpenID.Core]. Other authentication methods MAY be defined by
-            extensions. If omitted, the default is client_secret_basic -- the HTTP
-            Basic Authentication Scheme specified in Section 2.3.1 of OAuth 2.0 [RFC6749].
-          type: string
-        token_endpoint_auth_signing_alg:
-          description: JWS [JWS] alg algorithm [JWA] that MUST be used for signing
-            the JWT [JWT] used to authenticate the Client at the Token Endpoint for
-            the private_key_jwt and client_secret_jwt authentication methods. All
-            Token Requests using these authentication methods from this Client MUST
-            be rejected, if the JWT is not signed with this algorithm. Servers SHOULD
-            support RS256. The value none MUST NOT be used. The default, if omitted,
-            is that any algorithm supported by the OP and the RP MAY be used.
-          type: string
-        default_max_age:
-          description: Default Maximum Authentication Age. Specifies that the End-User
-            MUST be actively authenticated if the End-User was authenticated longer
-            ago than the specified number of seconds. The max_age request parameter
-            overrides this default value. If omitted, no default Maximum Authentication
-            Age is specified.
-          type: integer
-        require_auth_time:
-          description: Boolean value specifying whether the auth_time Claim in the
-            ID Token is REQUIRED. It is REQUIRED when the value is true. (If this
-            is false, the auth_time Claim can still be dynamically requested as an
-            individual Claim for the ID Token using the claims request parameter described
-            in Section 5.5.1 of OpenID Connect Core 1.0 [OpenID.Core].) If omitted,
-            the default value is false.
-          type: boolean
-        default_acr_values:
-          description: Default requested Authentication Context Class Reference values.
-            Array of strings that specifies the default acr values that the OP is
-            being requested to use for processing requests from this Client, with
-            the values appearing in order of preference. The Authentication Context
-            Class satisfied by the authentication performed is returned as the acr
-            Claim Value in the issued ID Token. The acr Claim is requested as a Voluntary
-            Claim by this parameter. The acr_values_supported discovery element contains
-            a list of the supported acr values supported by this server. Values specified
-            in the acr_values request parameter or an individual acr Claim request
-            override these default values.
-          type: array
-          items:
-            type: string
-        request_uris:
-          description: |-
-            Array of request_uri values that are pre-registered by the RP for use at the OP. Servers MAY cache the contents of the files referenced by these URIs and not retrieve them at the time they are used in a request. OPs can require that request_uri values used be pre-registered with the require_request_uri_registration discovery parameter.
-            If the contents of the request file could ever change, these URI values SHOULD include the base64url encoded SHA-256 hash value of the file contents referenced by the URI as the value of the URI fragment. If the fragment value used for a URI changes, that signals the server that its cached value for that URI with the old fragment value is no longer valid.
-          type: array
-          items:
-            type: string
     SecretChannel:
       title: Root Type for SecretChannel
       description: A secret key channel for a particular
@@ -1887,6 +1552,337 @@ components:
           type: integer
       example:
         claim_id: 10
+    UserProfile:
+      description: An object representing user profile infos.
+      type: object
+      properties:
+        profile:
+          description: URL of the End-User's profile page. The contents of this Web
+            page SHOULD be about the End-User.
+          type: string
+        picture:
+          description: URL of the End-User's profile picture. This URL MUST refer
+            to an image file (for example, a PNG, JPEG, or GIF image file), rather
+            than to a Web page containing an image. Note that this URL SHOULD specifically
+            reference a profile photo of the End-User suitable for displaying when
+            describing the End-User, rather than an arbitrary photo taken by the End-User.
+          type: string
+        website:
+          description: URL of the End-User's Web page or blog. This Web page SHOULD
+            contain information published by the End-User or an organization that
+            the End-User is affiliated with.
+          type: string
+        gender:
+          description: End-User's gender. Values defined by this specification are
+            female and male. Other values MAY be used when neither of the defined
+            values are applicable.
+          type: string
+        birthdate:
+          format: date
+          description: End-User's birthday, represented as an ISO 8601:2004 [ISO8601‑2004]
+            YYYY-MM-DD format. The year MAY be 0000, indicating that it is omitted.
+            To represent only the year, YYYY format is allowed. Note that depending
+            on the underlying platform's date related function, providing just year
+            can result in varying month and day, so the implementers need to take
+            this factor into account to correctly process the dates.
+          type: string
+        zoneinfo:
+          description: String from zoneinfo [zoneinfo] time zone database representing
+            the End-User's time zone. For example, Europe/Paris or America/Los_Angeles.
+          type: string
+        locale:
+          description: End-User's locale, represented as a BCP47 [RFC5646] language
+            tag. This is typically an ISO 639-1 Alpha-2 [ISO639‑1] language code in
+            lowercase and an ISO 3166-1 Alpha-2 [ISO3166‑1] country code in uppercase,
+            separated by a dash. For example, en-US or fr-CA. As a compatibility note,
+            some implementations have used an underscore as the separator rather than
+            a dash, for example, en_US; Relying Parties MAY choose to accept this
+            locale syntax as well.
+          type: string
+        address:
+          $ref: '#/components/schemas/UserAddress'
+          description: End-User's preferred postal address. The value of the address
+            member is a JSON [RFC4627] structure containing some or all of the members
+            defined in Section 5.1.1.
+      example:
+        profile: some text
+        picture: some text
+        website: some text
+        gender: some text
+        birthdate: 2018-01-17
+        zoneinfo: some text
+        locale: some text
+        address:
+          formatted: some text
+          street_address: some text
+          locality: some text
+          region: some text
+          country: some text
+          postal_code: some text
+    ServiceProviderConfig:
+      description: A model to represent, service provider specific configurations
+        possible
+      required:
+      - grant_types
+      - redirect_uris
+      - scope
+      type: object
+      properties:
+        redirect_uris:
+          description: Array of Redirection URI values used by the Client. One of
+            these registered Redirection URI values MUST exactly match the redirect_uri
+            parameter value used in each Authorization Request, with the matching
+            performed as described in Section 6.2.1 of [RFC3986] (Simple String Comparison).
+          type: array
+          items:
+            type: string
+        grant_types:
+          description: "JSON array containing a list of the OAuth 2.0 Grant Types\
+            \ that the Client is declaring that it will restrict itself to using.\
+            \ The Grant Type values used by \n\nOpenID Connect are:\n1. authorization_code:\
+            \ The Authorization Code Grant Type described in OAuth 2.0 Section 4.1.\n\
+            1. implicit: The Implicit Grant Type described in OAuth 2.0 Section 4.2.\n\
+            1. refresh_token: The Refresh Token Grant Type described in OAuth 2.0\
+            \ Section 6.\n\nThe following table lists the correspondence between response_type\
+            \ values that the Client will use and grant_type values that MUST be included\
+            \ in the registered grant_types list:\n\n1. code: authorization_code\n\
+            1. id_token: implicit\n1. token id_token: implicit\n1. code id_token:\
+            \ authorization_code, implicit\n1. code token: authorization_code, implicit\n\
+            1. code token id_token: authorization_code, implicit\n\nIf omitted, the\
+            \ default is that the Client will use only the authorization_code Grant\
+            \ Type."
+          type: array
+          items:
+            type: string
+        jwks_uri:
+          description: URL for the Client's JSON Web Key Set [JWK] document. If the
+            Client signs requests to the Server, it contains the signing key(s) the
+            Server uses to validate signatures from the Client. The JWK Set MAY also
+            contain the Client's encryption keys(s), which are used by the Server
+            to encrypt responses to the Client. When both signing and encryption keys
+            are made available, a use (Key Use) parameter value is REQUIRED for all
+            keys in the referenced JWK Set to indicate each key's intended usage.
+            Although some algorithms allow the same key to be used for both signatures
+            and encryption, doing so is NOT RECOMMENDED, as it is less secure. The
+            JWK x5c parameter MAY be used to provide X.509 representations of keys
+            provided. When used, the bare key values MUST still be present and MUST
+            match those in the certificate.
+          type: string
+        jwks:
+          description: Client's JSON Web Key Set [JWK] document, passed by value.
+            The semantics of the jwks parameter are the same as the jwks_uri parameter,
+            other than that the JWK Set is passed by value, rather than by reference.
+            This parameter is intended only to be used by Clients that, for some reason,
+            are unable to use the jwks_uri parameter, for instance, by native applications
+            that might not have a location to host the contents of the JWK Set. If
+            a Client can use jwks_uri, it MUST NOT use jwks. One significant downside
+            of jwks is that it does not enable key rotation (which jwks_uri does,
+            as described in Section 10 of OpenID Connect Core 1.0 [OpenID.Core]).
+            The jwks_uri and jwks parameters MUST NOT be used together.
+          type: string
+        id_token_signed_response_alg:
+          description: JWS alg algorithm [JWA] REQUIRED for signing UserInfo Responses.
+            If this is specified, the response will be JWT [JWT] serialized, and signed
+            using JWS. The default, if omitted, is for the UserInfo Response to return
+            the Claims as a UTF-8 encoded JSON object using the application/json content-type.
+          type: string
+        id_token_encrypted_response_alg:
+          description: JWE alg algorithm [JWA] REQUIRED for encrypting the ID Token
+            issued to this Client. If this is requested, the response will be signed
+            then encrypted, with the result being a Nested JWT, as defined in [JWT].
+            The default, if omitted, is that no encryption is performed.
+          type: string
+        id_token_encrypted_response_enc:
+          description: JWE enc algorithm [JWA] REQUIRED for encrypting the ID Token
+            issued to this Client. If id_token_encrypted_response_alg is specified,
+            the default for this value is A128CBC-HS256. When id_token_encrypted_response_enc
+            is included, id_token_encrypted_response_alg MUST also be provided.
+          type: string
+        userinfo_signed_response_alg:
+          description: JWS alg algorithm [JWA] REQUIRED for signing UserInfo Responses.
+            If this is specified, the response will be JWT [JWT] serialized, and signed
+            using JWS. The default, if omitted, is for the UserInfo Response to return
+            the Claims as a UTF-8 encoded JSON object using the application/json content-type.
+          type: string
+        userinfo_encrypted_response_alg:
+          description: JWE [JWE] alg algorithm [JWA] REQUIRED for encrypting UserInfo
+            Responses. If both signing and encryption are requested, the response
+            will be signed then encrypted, with the result being a Nested JWT, as
+            defined in [JWT]. The default, if omitted, is that no encryption is performed.
+          type: string
+        userinfo_encrypted_response_enc:
+          description: JWE enc algorithm [JWA] REQUIRED for encrypting UserInfo Responses.
+            If userinfo_encrypted_response_alg is specified, the default for this
+            value is A128CBC-HS256. When userinfo_encrypted_response_enc is included,
+            userinfo_encrypted_response_alg MUST also be provided.
+          type: string
+        request_object_signing_alg:
+          description: JWS [JWS] alg algorithm [JWA] that MUST be used for signing
+            Request Objects sent to the OP. All Request Objects from this Client MUST
+            be rejected, if not signed with this algorithm. Request Objects are described
+            in Section 6.1 of OpenID Connect Core 1.0 [OpenID.Core]. This algorithm
+            MUST be used both when the Request Object is passed by value (using the
+            request parameter) and when it is passed by reference (using the request_uri
+            parameter). Servers SHOULD support RS256. The value none MAY be used.
+            The default, if omitted, is that any algorithm supported by the OP and
+            the RP MAY be used.
+          type: string
+        request_object_encryption_alg:
+          description: ' JWE [JWE] alg algorithm [JWA] the RP is declaring that it
+            may use for encrypting Request Objects sent to the OP. This parameter
+            SHOULD be included when symmetric encryption will be used, since this
+            signals to the OP that a client_secret value needs to be returned from
+            which the symmetric key will be derived, that might not otherwise be returned.
+            The RP MAY still use other supported encryption algorithms or send unencrypted
+            Request Objects, even when this parameter is present. If both signing
+            and encryption are requested, the Request Object will be signed then encrypted,
+            with the result being a Nested JWT, as defined in [JWT]. The default,
+            if omitted, is that the RP is not declaring whether it might encrypt any
+            Request Objects.'
+          type: string
+        request_object_encryption_enc:
+          description: JWE enc algorithm [JWA] the RP is declaring that it may use
+            for encrypting Request Objects sent to the OP. If request_object_encryption_alg
+            is specified, the default for this value is A128CBC-HS256. When request_object_encryption_enc
+            is included, request_object_encryption_alg MUST also be provided.
+          type: string
+        token_endpoint_auth_method:
+          description: Requested Client Authentication method for the Token Endpoint.
+            The options are client_secret_post, client_secret_basic, client_secret_jwt,
+            private_key_jwt, and none, as described in Section 9 of OpenID Connect
+            Core 1.0 [OpenID.Core]. Other authentication methods MAY be defined by
+            extensions. If omitted, the default is client_secret_basic -- the HTTP
+            Basic Authentication Scheme specified in Section 2.3.1 of OAuth 2.0 [RFC6749].
+          type: string
+        token_endpoint_auth_signing_alg:
+          description: JWS [JWS] alg algorithm [JWA] that MUST be used for signing
+            the JWT [JWT] used to authenticate the Client at the Token Endpoint for
+            the private_key_jwt and client_secret_jwt authentication methods. All
+            Token Requests using these authentication methods from this Client MUST
+            be rejected, if the JWT is not signed with this algorithm. Servers SHOULD
+            support RS256. The value none MUST NOT be used. The default, if omitted,
+            is that any algorithm supported by the OP and the RP MAY be used.
+          type: string
+        default_max_age:
+          description: Default Maximum Authentication Age. Specifies that the End-User
+            MUST be actively authenticated if the End-User was authenticated longer
+            ago than the specified number of seconds. The max_age request parameter
+            overrides this default value. If omitted, no default Maximum Authentication
+            Age is specified.
+          type: integer
+        require_auth_time:
+          description: Boolean value specifying whether the auth_time Claim in the
+            ID Token is REQUIRED. It is REQUIRED when the value is true. (If this
+            is false, the auth_time Claim can still be dynamically requested as an
+            individual Claim for the ID Token using the claims request parameter described
+            in Section 5.5.1 of OpenID Connect Core 1.0 [OpenID.Core].) If omitted,
+            the default value is false.
+          type: boolean
+        default_acr_values:
+          description: Default requested Authentication Context Class Reference values.
+            Array of strings that specifies the default acr values that the OP is
+            being requested to use for processing requests from this Client, with
+            the values appearing in order of preference. The Authentication Context
+            Class satisfied by the authentication performed is returned as the acr
+            Claim Value in the issued ID Token. The acr Claim is requested as a Voluntary
+            Claim by this parameter. The acr_values_supported discovery element contains
+            a list of the supported acr values supported by this server. Values specified
+            in the acr_values request parameter or an individual acr Claim request
+            override these default values.
+          type: array
+          items:
+            type: string
+        request_uris:
+          description: |-
+            Array of request_uri values that are pre-registered by the RP for use at the OP. Servers MAY cache the contents of the files referenced by these URIs and not retrieve them at the time they are used in a request. OPs can require that request_uri values used be pre-registered with the require_request_uri_registration discovery parameter.
+            If the contents of the request file could ever change, these URI values SHOULD include the base64url encoded SHA-256 hash value of the file contents referenced by the URI as the value of the URI fragment. If the fragment value used for a URI changes, that signals the server that its cached value for that URI with the old fragment value is no longer valid.
+          type: array
+          items:
+            type: string
+        scope:
+          description: Approved oauth scopes for the service providers
+          type: array
+          items:
+            type: string
+    ServiceProviderInfo:
+      description: Additional information related to service provider.
+      type: object
+      properties:
+        logo_uri:
+          description: URL that references a logo for the Client application. If present,
+            the server SHOULD display this image to the End-User during approval.
+            The value of this field MUST point to a valid image file. If desired,
+            representation of this Claim in different languages and scripts is represented
+            as described in Section 2.1.
+          type: string
+        contacts:
+          description: Array of e-mail addresses of people responsible for this Client.
+            This might be used by some providers to enable a Web user interface to
+            modify the Client information.
+          type: array
+          items:
+            type: string
+        client_uri:
+          description: URL of the home page of the Client. The value of this field
+            MUST point to a valid Web page. If present, the server SHOULD display
+            this URL to the End-User in a followable fashion. If desired, representation
+            of this Claim in different languages and scripts is represented as described
+            in Section 2.1.
+          type: string
+        policy_uri:
+          description: URL that the Relying Party Client provides to the End-User
+            to read about the how the profile data will be used. The value of this
+            field MUST point to a valid web page. The OpenID Provider SHOULD display
+            this URL to the End-User if it is given. If desired, representation of
+            this Claim in different languages and scripts is represented as described
+            in Section 2.1.
+          type: string
+        tos_uri:
+          description: URL that the Relying Party Client provides to the End-User
+            to read about the Relying Party's terms of service. The value of this
+            field MUST point to a valid web page. The OpenID Provider SHOULD display
+            this URL to the End-User if it is given. If desired, representation of
+            this Claim in different languages and scripts is represented as described
+            in Section 2.1.
+          type: string
+        initiate_login_uri:
+          description: URI using the https scheme that a third party can use to initiate
+            a login by the RP, as specified in Section 4 of OpenID Connect Core 1.0
+            [OpenID.Core]. The URI MUST accept requests via both GET and POST. The
+            Client MUST understand the login_hint and iss parameters and SHOULD support
+            the target_link_uri parameter.
+          type: string
+        application_type:
+          description: 'Kind of the application. The default, if omitted, is web.
+            The defined values are native or web. Web Clients using the OAuth Implicit
+            Grant Type MUST only register URLs using the https scheme as redirect_uris;
+            they MUST NOT use localhost as the hostname. Native Clients MUST only
+            register redirect_uris using custom URI schemes or URLs using the http:
+            scheme with localhost as the hostname. Authorization Servers MAY place
+            additional constraints on Native Clients. Authorization Servers MAY reject
+            Redirection URI values using the http scheme, other than the localhost
+            case for Native Clients. The Authorization Server MUST verify that all
+            the registered redirect_uris conform to these constraints. This prevents
+            sharing a Client ID across different types of Clients.'
+          enum:
+          - web
+          - native
+          type: string
+    ServiceProvider:
+      description: An object representing one service provider.
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ServiceProviderInfo'
+      - $ref: '#/components/schemas/ServiceProviderConfig'
+      - $ref: '#/components/schemas/ServiceProviderSummary'
+    User:
+      description: A detail user object information
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/UserName'
+      - $ref: '#/components/schemas/UserProfile'
+      - $ref: '#/components/schemas/UserContact'
+      - $ref: '#/components/schemas/UserSummary'
   responses:
     UnAuthorized:
       content:
