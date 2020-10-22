@@ -1806,6 +1806,8 @@ components:
             type: string
     ServiceProviderInfo:
       description: Additional information related to service provider.
+      required:
+      - application_type
       type: object
       properties:
         logo_uri:
