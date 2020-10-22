@@ -19,6 +19,7 @@ func NewEchoServer(serverConfig *config.ServerConfig, templates *AppTemplates, c
 	e := echo.New()
 	e.Debug = serverConfig.Debug
 
+	e.Use(middleware.CORS())
 	p := prometheus.NewPrometheus("cerberus", nil)
 	p.Use(e)
 	e.Use(middleware.Gzip(), middleware.Secure())

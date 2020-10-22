@@ -16,7 +16,7 @@ func (c *CerberusAPI) GetClaims(ctx echo.Context, params GetClaimsParams) error 
 	}
 	claims, total, err := c.ScopeClaimStore.GetAllClaims(ctx.Request().Context(), uint(pageNumber), uint(pageSize))
 	if err != nil {
-		return &Error{
+		return &ApiError{
 			ErrorCode: "error",
 			Message:   err.Error(),
 		}
@@ -47,7 +47,7 @@ func (c *CerberusAPI) CreateClaim(ctx echo.Context) error {
 	}
 	_, err = c.ScopeClaimStore.CreateClaim(ctx.Request().Context(), createReq.Name, createReq.Description)
 	if err != nil {
-		return &Error{
+		return &ApiError{
 			ErrorCode: "error",
 			Message:   err.Error(),
 		}
@@ -58,7 +58,7 @@ func (c *CerberusAPI) CreateClaim(ctx echo.Context) error {
 func (c *CerberusAPI) DeleteClaim(ctx echo.Context, id int) error {
 	err := c.ScopeClaimStore.DeleteClaim(ctx.Request().Context(), uint(id))
 	if err != nil {
-		return &Error{
+		return &ApiError{
 			ErrorCode: "error",
 			Message:   err.Error(),
 		}
@@ -69,7 +69,7 @@ func (c *CerberusAPI) DeleteClaim(ctx echo.Context, id int) error {
 func (c *CerberusAPI) GetClaim(ctx echo.Context, id int) error {
 	claim, err := c.ScopeClaimStore.GetClaim(ctx.Request().Context(), uint(id))
 	if err != nil {
-		return &Error{
+		return &ApiError{
 			ErrorCode: "error",
 			Message:   err.Error(),
 		}
@@ -90,7 +90,7 @@ func (c *CerberusAPI) UpdateClaim(ctx echo.Context, id int) error {
 	}
 	err = c.ScopeClaimStore.UpdateClaim(ctx.Request().Context(), uint(id), cl.Description)
 	if err != nil {
-		return &Error{
+		return &ApiError{
 			ErrorCode: "error",
 			Message:   err.Error(),
 		}
@@ -101,7 +101,7 @@ func (c *CerberusAPI) UpdateClaim(ctx echo.Context, id int) error {
 func (c *CerberusAPI) FindClaimByName(ctx echo.Context, params FindClaimByNameParams) error {
 	claim, err := c.ScopeClaimStore.FindClaimByName(ctx.Request().Context(), params.Name)
 	if err != nil {
-		return &Error{
+		return &ApiError{
 			ErrorCode: "error",
 			Message:   err.Error(),
 		}

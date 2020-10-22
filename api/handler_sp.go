@@ -21,7 +21,7 @@ func (c *CerberusAPI) GetServiceProviders(ctx echo.Context, params GetServicePro
 	}
 	sps, total, err := c.SPStoreService.FindAllSP(ctx.Request().Context(), page, size)
 	if err != nil {
-		return &Error{
+		return &ApiError{
 			ErrorCode: "error",
 			Message:   err.Error(),
 		}
@@ -53,7 +53,7 @@ func (c *CerberusAPI) CreateServiceProvider(ctx echo.Context) error {
 
 	_, err = c.SPStoreService.CreateSP(ctx.Request().Context(), sp.Name, sp.Description, metadata)
 	if err != nil {
-		return &Error{
+		return &ApiError{
 			ErrorCode: "error",
 			Message:   err.Error(),
 		}
@@ -64,7 +64,7 @@ func (c *CerberusAPI) CreateServiceProvider(ctx echo.Context) error {
 func (c *CerberusAPI) DeleteServiceProvider(ctx echo.Context, id int) error {
 	err := c.SPStoreService.DeleteSP(ctx.Request().Context(), uint(id))
 	if err != nil {
-		return &Error{
+		return &ApiError{
 			ErrorCode: "error",
 			Message:   err.Error(),
 		}
@@ -75,7 +75,7 @@ func (c *CerberusAPI) DeleteServiceProvider(ctx echo.Context, id int) error {
 func (c *CerberusAPI) GetServiceProvider(ctx echo.Context, id int) error {
 	provider, err := c.SPStoreService.GetSP(ctx.Request().Context(), uint(id))
 	if err != nil {
-		return &Error{
+		return &ApiError{
 			ErrorCode: "error",
 			Message:   err.Error(),
 		}
@@ -93,7 +93,7 @@ func (c *CerberusAPI) UpdateServiceProvider(ctx echo.Context, id int) error {
 	metadata := c.convertToMetadata(apiSp)
 	err = c.SPStoreService.UpdateSP(ctx.Request().Context(), uint(id), apiSp.Public, metadata)
 	if err != nil {
-		return &Error{
+		return &ApiError{
 			ErrorCode: "error",
 			Message:   err.Error(),
 		}
@@ -104,7 +104,7 @@ func (c *CerberusAPI) UpdateServiceProvider(ctx echo.Context, id int) error {
 func (c *CerberusAPI) GetCredentials(ctx echo.Context, id int) error {
 	sp, err := c.SPStoreService.GetSP(ctx.Request().Context(), uint(id))
 	if err != nil {
-		return &Error{
+		return &ApiError{
 			ErrorCode: "error",
 			Message:   err.Error(),
 		}
@@ -116,10 +116,15 @@ func (c *CerberusAPI) GetCredentials(ctx echo.Context, id int) error {
 	return ctx.JSON(http.StatusOK, spCred)
 }
 
-func (c *CerberusAPI) GenerateCredentials(ctx echo.Context, id int, _ GenerateCredentialsParams) error {
+func (c *CerberusAPI) GenerateCredentials(ctx echo.Context, id int) error {
+	genCred := &RegenerateCredentials{}
+	err := ctx.Bind(genCred)
+	if err != nil {
+		return err
+	}
 	credentials, secret, err := c.SPStoreService.ResetClientCredentials(ctx.Request().Context(), uint(id))
 	if err != nil {
-		return &Error{
+		return &ApiError{
 			ErrorCode: "error",
 			Message:   err.Error(),
 		}
@@ -135,7 +140,7 @@ func (c *CerberusAPI) FindServiceProvider(ctx echo.Context, params FindServicePr
 	if params.ClientId != nil {
 		sp, err := c.SPStoreService.FindSPByClientId(ctx.Request().Context(), *(params.ClientId))
 		if err != nil {
-			return &Error{
+			return &ApiError{
 				ErrorCode: "error",
 				Message:   err.Error(),
 			}
@@ -145,7 +150,7 @@ func (c *CerberusAPI) FindServiceProvider(ctx echo.Context, params FindServicePr
 	} else if params.Name != nil {
 		sp, err := c.SPStoreService.FindSPByName(ctx.Request().Context(), *(params.Name))
 		if err != nil {
-			return &Error{
+			return &ApiError{
 				ErrorCode: "error",
 				Message:   err.Error(),
 			}
@@ -153,7 +158,7 @@ func (c *CerberusAPI) FindServiceProvider(ctx echo.Context, params FindServicePr
 		apiSp := c.convertToSP(sp)
 		return ctx.JSON(http.StatusOK, apiSp)
 	} else {
-		return &Error{
+		return &ApiError{
 			ErrorCode: "error",
 			Message:   "either client_id or name parameter is required",
 		}
@@ -164,21 +169,19 @@ func (c *CerberusAPI) PatchServiceProvider(ctx echo.Context, _ int) error {
 	return ctx.String(http.StatusNotImplemented, "implement me")
 }
 
-func (c *CerberusAPI) DeactivateServiceProvider(ctx echo.Context, id int) error {
-	err := c.SPStoreService.DeactivateSP(ctx.Request().Context(), uint(id))
+func (c *CerberusAPI) UpdateServiceProviderStatus(ctx echo.Context, id int) error {
+	update := &StatusUpdate{}
+	err := ctx.Bind(update)
 	if err != nil {
-		return &Error{
-			ErrorCode: "error",
-			Message:   err.Error(),
-		}
+		return err
 	}
-	return ctx.NoContent(http.StatusAccepted)
-}
-
-func (c *CerberusAPI) ActivateServiceProvider(ctx echo.Context, id int) error {
-	err := c.SPStoreService.ActivateSP(ctx.Request().Context(), uint(id))
+	if update.Active {
+		err = c.SPStoreService.ActivateSP(ctx.Request().Context(), uint(id))
+	} else {
+		err = c.SPStoreService.DeactivateSP(ctx.Request().Context(), uint(id))
+	}
 	if err != nil {
-		return &Error{
+		return &ApiError{
 			ErrorCode: "error",
 			Message:   err.Error(),
 		}

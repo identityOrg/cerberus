@@ -16,7 +16,7 @@ func (c *CerberusAPI) GetSecretChannels(ctx echo.Context, params GetSecretChanne
 	}
 	channels, total, err := c.SecretStoreStore.GetAllChannels(ctx.Request().Context(), page, size)
 	if err != nil {
-		return &Error{
+		return &ApiError{
 			ErrorCode: "error",
 			Message:   err.Error(),
 		}
