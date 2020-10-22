@@ -90,6 +90,11 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ChangePasswordRequest'
+            examples:
+              success:
+                value:
+                  old_password: '**********'
+                  new_password: '**********'
         required: true
       tags:
       - anyuser
@@ -152,6 +157,11 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UserResetPassword'
+            examples:
+              ex1:
+                value:
+                  otp: some text
+                  username: some text
         required: true
       tags:
       - anonymous
@@ -173,13 +183,18 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UserRecoverPassword'
+            examples:
+              success:
+                value:
+                  username: some text
+                  email: some text
         required: true
       tags:
       - anonymous
       - user
       responses:
-        "200":
-          description: Confirmation email sent
+        "202":
+          description: Success
       security:
       - {}
       operationId: initiate-password-recovery
@@ -1177,6 +1192,7 @@ components:
       required:
       - otp
       - username
+      - password
       type: object
       properties:
         otp:
@@ -1185,9 +1201,14 @@ components:
         username:
           description: Username of the user
           type: string
+        password:
+          format: password
+          description: New password to set to user
+          type: string
       example:
         otp: some text
         username: some text
+        password: '**********'
     UserUpdate:
       description: A request object to update a user
       type: object
