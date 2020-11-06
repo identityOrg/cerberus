@@ -24,7 +24,7 @@ spec:
               protocol: TCP
           imagePullPolicy: IfNotPresent
           volumeMounts:
-            - name: cerberus
+            - name: config
               mountPath: "/root/config"
       restartPolicy: Always
       terminationGracePeriodSeconds: 30

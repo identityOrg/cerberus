@@ -5,8 +5,8 @@ core:
   passwordcost: 10
   totpsecretlength: 6
 db:
-  driver: sqlite3
-  dsn: test.db
+  driver: mysql
+  dsn: user:user@tcp(mysql:3306)/cerberus?parseTime=true
 provider:
   accesstokenentropy: 20
   accesstokenlifespan: 1h0m0s
