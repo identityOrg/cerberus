@@ -1,0 +1,17 @@
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: cerberus
+  namespace: default
+  labels:
+    app: cerberus
+spec:
+  rules:
+    - host: cerberus.prasenjit.net
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              serviceName: cerberus
+              servicePort: 80

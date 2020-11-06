@@ -2,7 +2,7 @@ cerberus*
 .idea
 
 *-packr.go
-!cerberus-docker.yaml
+!cerberus-*.yaml
 !cerberus.yaml
 
 **/*.db
