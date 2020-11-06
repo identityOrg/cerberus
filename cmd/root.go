@@ -17,7 +17,6 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/identityOrg/cerberus/kube"
 	"github.com/spf13/cobra"
 	"os"
 	"time"
@@ -68,6 +67,7 @@ func initConfig() {
 		viper.SetConfigFile(cfgFile)
 	} else {
 		viper.AddConfigPath(".")
+		viper.AddConfigPath("./config")
 		viper.SetConfigName("cerberus")
 	}
 
@@ -77,7 +77,6 @@ func initConfig() {
 	}
 	setDefaultConfiguration()
 	viper.AutomaticEnv() // read in environment variables that match
-	kube.LoadKubeConfigMap()
 }
 
 func setDefaultConfiguration() {

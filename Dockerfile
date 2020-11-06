@@ -18,10 +18,7 @@ RUN apk --no-cache add ca-certificates
 RUN apk --no-cache add sqlite
 WORKDIR /root/
 COPY --from=build /go/src/github.com/identityOrg/cerberus/cerberus .
-COPY ./cerberus-docker.yaml /root/cerberus-docker.yaml
 
 EXPOSE 8080
 
-RUN ./cerberus migrate --demo
-
-CMD ["./cerberus", "serve", "--config", "cerberus-docker.yaml"]
+CMD ["./cerberus", "serve"]

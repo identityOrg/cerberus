@@ -4,7 +4,6 @@ resources:
   - mysql-deployment.yaml
   - mysql-service.yaml
   - cerberus-role.yaml
-  - cerberus-config-map.yaml
   - cerberus-deployment.yaml
   - cerberus-service.yaml
   - cerberus-ingress.yaml
@@ -18,3 +17,7 @@ commonAnnotations:
 
 namespace: cerberus
 
+configMapGenerator:
+  - name: cerberus
+    files:
+      - cerberus.yaml
