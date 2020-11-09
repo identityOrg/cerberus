@@ -22,14 +22,13 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           volumeMounts:
             - name: config
               mountPath: "/root/config"
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst
-      serviceAccountName: cerberus
       volumes:
         - name: config
           configMap:

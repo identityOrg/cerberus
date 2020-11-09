@@ -1,8 +1,0 @@
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: cerberus
-  namespace: default
-data:
-  db.driver: mysql
-  db.dsn: 'user:user@tcp(mysql:3306)/cerberus?parseTime=true'
