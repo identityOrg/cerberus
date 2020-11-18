@@ -1,6 +1,7 @@
 package demo
 
 import (
+	"github.com/identityOrg/cerberus/setup/config"
 	"github.com/labstack/echo/v4"
 	"math/rand"
 	"net/http"
@@ -17,6 +18,7 @@ type HomePageData struct {
 	Type            string
 	AuthCodeFlowURL string
 	ImplicitFlowURL string
+	HomeURL         string
 	HybridFlowURL   string
 	AccessCode      string
 	AccessToken     string
@@ -38,6 +40,7 @@ func NewHomePageData(pageType string) *HomePageData {
 	query.Set("response_type", "code token")
 	impUrl.RawQuery = query.Encode()
 	h.HybridFlowURL = impUrl.String()
+	h.HomeURL = config.NewSDKConfig().Issuer
 	return h
 }
 

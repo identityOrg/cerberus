@@ -53,6 +53,13 @@
                 <input type="submit" value="Refresh" class="btn btn-success">
             </form>
         {{end}}
+        {{if .IDToken}}
+            <form action="/oauth2/logout" method="get">
+                <input type="hidden" value="{{.IDToken}}" name="id_token_hint">
+                <input type="hidden" value="{{.HomeURL}}" name="post_logout_redirect_uri">
+                <input type="submit" value="Logout" class="btn btn-success">
+            </form>
+        {{end}}
     {{else}}
         <h3 id="error">Initiate login to see response</h3>
     {{end}}

@@ -32,8 +32,8 @@ func NewEchoServer(serverConfig *config.ServerConfig, templates *AppTemplates, c
 	e.Use(StaticFromRice)
 
 	e.Renderer = templates
-	manager.SetLoginPageHandler(RenderLoginPage)
-	manager.SetConsentPageHandler(RenderConsentPage)
+	//manager.SetLoginPageHandler(RenderLoginPage)
+	//manager.SetConsentPageHandler(RenderConsentPage)
 	configureProtocolRouted(e, manager)
 	handler.Use(e)
 
@@ -69,4 +69,6 @@ func configureProtocolRouted(e *echo.Echo, manager oidcsdk.IManager) {
 	oauth2.POST("/revocation", echo.WrapHandler(http.HandlerFunc(manager.ProcessRevocationEP)))
 	oauth2.GET("/me", echo.WrapHandler(http.HandlerFunc(manager.ProcessUserInfoEP)))
 	oauth2.GET("/keys", echo.WrapHandler(http.HandlerFunc(manager.ProcessKeysEP)))
+	oauth2.GET("/logout", echo.WrapHandler(http.HandlerFunc(manager.ProcessRPILogoutEP)))
+	oauth2.POST("/logout", echo.WrapHandler(http.HandlerFunc(manager.ProcessRPILogoutEP)))
 }

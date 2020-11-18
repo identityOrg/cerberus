@@ -5,7 +5,6 @@ import (
 	"github.com/identityOrg/cerberus/setup/config"
 	"github.com/identityOrg/oidcsdk"
 	"net/http"
-	"time"
 )
 
 type Manager struct {
@@ -20,37 +19,15 @@ func NewManager(secretConfig *config.SecretConfig) *Manager {
 	}
 }
 
-func (m *Manager) RetrieveUserSession(r *http.Request) (oidcsdk.ISession, error) {
+func (m *Manager) RetrieveUserSession(w http.ResponseWriter, r *http.Request) (oidcsdk.ISession, error) {
 	sessBack, err := m.SessionStore.Get(r, m.SessionName)
 	if err != nil {
 		return nil, err
 	}
-	sess := &Session{}
-	userName := sessBack.Values["username"]
-	scope := sessBack.Values["scope"]
-	loginTime := sessBack.Values["login-time"]
-	if userName != nil {
-		sess.Username = userName.(string)
-	}
-	if loginTime != nil {
-		i := loginTime.(int64)
-		unix := time.Unix(i, 0)
-		sess.LoginTime = &unix
-	}
-	if scope != nil {
-		sess.Scope = scope.(string)
+	sess := &DefaultSession{
+		s: sessBack,
+		r: r,
+		w: w,
 	}
 	return sess, nil
-}
-
-func (m *Manager) StoreUserSession(w http.ResponseWriter, r *http.Request, sess oidcsdk.ISession) error {
-	sessBack, err := m.SessionStore.Get(r, m.SessionName)
-	if err != nil {
-		return err
-	}
-	sessBack.Values["username"] = sess.GetUsername()
-	sessBack.Values["scope"] = sess.GetScope()
-	sessBack.Values["login-time"] = sess.GetLoginTime().Unix()
-
-	return m.SessionStore.Save(r, w, sessBack)
 }

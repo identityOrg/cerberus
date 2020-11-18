@@ -17,6 +17,7 @@ func SetupDemoData(ormDB *gorm.DB, config *Config, sdkConfig *oidcsdk.Config, re
 	fmt.Println("Creating demo client with client_id=client and client_secret=client")
 	spMetadata := &models.ServiceProviderMetadata{
 		RedirectUris:             []string{sdkConfig.Issuer + "/redirect"},
+		PostLogoutRedirectUris:   []string{sdkConfig.Issuer},
 		Scopes:                   strings.Split("openid|offline|offline_access", "|"),
 		GrantTypes:               strings.Split("authorization_code|password|refresh_token|client_credentials|implicit", "|"),
 		ApplicationType:          "web",

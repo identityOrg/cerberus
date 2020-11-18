@@ -29,6 +29,7 @@ func CreateEchoServer() (*echo.Echo, error) {
 	serverConfig := config.NewServerConfig()
 	setupAppTemplates := NewAppTemplates()
 	oidcsdkConfig := config.NewSDKConfig()
+	cerberusPageResponseHandler := NewCerberusPageResponseHandler(setupAppTemplates)
 	defaultRequestContextFactory := factories.NewDefaultRequestContextFactory()
 	defaultErrorWriter := writers.NewDefaultErrorWriter()
 	defaultResponseWriter := writers.NewDefaultResponseWriter()
@@ -49,6 +50,7 @@ func CreateEchoServer() (*echo.Echo, error) {
 	spStoreServiceImpl := core.NewSPStoreServiceImpl(db, crypto, crypto)
 	defaultClientAuthenticationProcessor := processors.NewDefaultClientAuthenticationProcessor(spStoreServiceImpl)
 	defaultGrantTypeValidator := processors.NewDefaultGrantTypeValidator()
+	defaultRPILogoutIDTokenValidator := processors.NewDefaultRPILogoutIDTokenValidator(defaultStrategy, spStoreServiceImpl)
 	defaultResponseTypeValidator := processors.NewDefaultResponseTypeValidator()
 	defaultAccessCodeValidator := processors.NewDefaultAccessCodeValidator(tokenStoreServiceImpl, defaultStrategy)
 	defaultRefreshTokenValidator := processors.NewDefaultRefreshTokenValidator(defaultStrategy, tokenStoreServiceImpl)
@@ -66,8 +68,9 @@ func CreateEchoServer() (*echo.Echo, error) {
 	defaultIDTokenIssuer := processors.NewDefaultIDTokenIssuer(defaultStrategy, oidcsdkConfig)
 	defaultRefreshTokenIssuer := processors.NewDefaultRefreshTokenIssuer(defaultStrategy, oidcsdkConfig)
 	defaultTokenPersister := processors.NewDefaultTokenPersister(tokenStoreServiceImpl, userStoreServiceImpl, oidcsdkConfig)
-	v := processors.NewProcessorSequence(defaultBearerUserAuthProcessor, defaultClientAuthenticationProcessor, defaultGrantTypeValidator, defaultResponseTypeValidator, defaultAccessCodeValidator, defaultRefreshTokenValidator, defaultStateValidator, defaultPKCEValidator, defaultRedirectURIValidator, defaultAudienceValidationProcessor, defaultScopeValidator, defaultUserValidator, defaultClaimProcessor, defaultTokenIntrospectionProcessor, defaultTokenRevocationProcessor, defaultAuthCodeIssuer, defaultAccessTokenIssuer, defaultIDTokenIssuer, defaultRefreshTokenIssuer, defaultTokenPersister)
+	v := processors.NewProcessorSequence(defaultBearerUserAuthProcessor, defaultClientAuthenticationProcessor, defaultGrantTypeValidator, defaultRPILogoutIDTokenValidator, defaultResponseTypeValidator, defaultAccessCodeValidator, defaultRefreshTokenValidator, defaultStateValidator, defaultPKCEValidator, defaultRedirectURIValidator, defaultAudienceValidationProcessor, defaultScopeValidator, defaultUserValidator, defaultClaimProcessor, defaultTokenIntrospectionProcessor, defaultTokenRevocationProcessor, defaultAuthCodeIssuer, defaultAccessTokenIssuer, defaultIDTokenIssuer, defaultRefreshTokenIssuer, defaultTokenPersister)
 	options := &manager.Options{
+		PageResponseHandler:   cerberusPageResponseHandler,
 		RequestContextFactory: defaultRequestContextFactory,
 		ErrorWriter:           defaultErrorWriter,
 		ResponseWriter:        defaultResponseWriter,
@@ -88,7 +91,8 @@ func CreateEchoServer() (*echo.Echo, error) {
 var AppDependency = wire.NewSet(
 	NewGormDB,
 	NewEchoServer,
-	NewAppTemplates, core.ProviderSet, api.ProviderSet, impl.DefaultManagerSet, impl.DefaultProcessorSet, config.NewCoreConfig, config.NewSDKConfig, config.NewDBConfig, config.NewSecretConfig, config.NewServerConfig, handlers.NewLoginHandler, session.NewManager, wire.Bind(new(oidcsdk.ISessionManager), new(*session.Manager)), NewCrypto, wire.Bind(new(core.ITextEncrypts), new(*Crypto)), wire.Bind(new(core.ITextDecrypts), new(*Crypto)),
+	NewAppTemplates,
+	NewCerberusPageResponseHandler, wire.Bind(new(oidcsdk.IPageResponseHandler), new(*CerberusPageResponseHandler)), core.ProviderSet, api.ProviderSet, impl.DefaultManagerSet, impl.DefaultProcessorSet, config.NewCoreConfig, config.NewSDKConfig, config.NewDBConfig, config.NewSecretConfig, config.NewServerConfig, handlers.NewLoginHandler, session.NewManager, wire.Bind(new(oidcsdk.ISessionManager), new(*session.Manager)), NewCrypto, wire.Bind(new(core.ITextEncrypts), new(*Crypto)), wire.Bind(new(core.ITextDecrypts), new(*Crypto)),
 )
 
 type Crypto struct{}

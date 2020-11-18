@@ -19,6 +19,8 @@ var AppDependency = wire.NewSet(
 	NewGormDB,
 	NewEchoServer,
 	NewAppTemplates,
+	NewCerberusPageResponseHandler,
+	wire.Bind(new(oidcsdk.IPageResponseHandler), new(*CerberusPageResponseHandler)),
 	core.ProviderSet,
 	api.ProviderSet,
 	impl.DefaultManagerSet,

@@ -21,6 +21,14 @@ type ServiceProviderModel struct {
 	Metadata     *ServiceProviderMetadata `gorm:"column:metadata" json:"metadata,omitempty"`
 }
 
+func (sp ServiceProviderModel) GetPostLogoutRedirectURIs() []string {
+	if sp.Metadata != nil {
+		return sp.Metadata.PostLogoutRedirectUris
+	} else {
+		return []string{}
+	}
+}
+
 func (sp ServiceProviderModel) AutoMigrate(db gorm.Migrator) error {
 	return db.AutoMigrate(&sp)
 }
@@ -76,6 +84,7 @@ func (sp ServiceProviderModel) TableName() string {
 type ServiceProviderMetadata struct {
 	ClientName                   string                 `json:"client_name,omitempty"`
 	RedirectUris                 []string               `json:"redirect_uris,omitempty"`
+	PostLogoutRedirectUris       []string               `json:"post_logout_redirect_uris,omitempty"`
 	ResponseTypes                []string               `json:"response_types,omitempty"`
 	Scopes                       []string               `json:"scopes,omitempty"`
 	GrantTypes                   []string               `json:"grant_types,omitempty"`

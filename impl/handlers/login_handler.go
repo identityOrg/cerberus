@@ -30,16 +30,16 @@ func (l *LoginHandler) AuthenticateUser(context echo.Context) error {
 	if err != nil {
 		return context.Render(http.StatusOK, "login.html", request)
 	} else {
-		userSession, err := l.SessionManager.RetrieveUserSession(context.Request())
+		userSession, err := l.SessionManager.RetrieveUserSession(context.Response(), context.Request())
 		if err != nil {
 			return err
 		} else {
-			s := userSession.(*session.Session)
-			s.Username = username
+			sess := userSession.(*session.DefaultSession)
+			sess.SetAttribute(session.UsernameAttribute, username)
 			now := time.Now()
-			s.LoginTime = &now
+			sess.SetAttribute(session.LoginTimeAttribute, &now)
 
-			err := l.SessionManager.StoreUserSession(context.Response(), context.Request(), userSession)
+			err := sess.Save()
 			if err != nil {
 				return err
 			}
