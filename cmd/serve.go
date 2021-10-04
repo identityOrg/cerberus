@@ -44,17 +44,18 @@ found in designated file.`,
 			return
 		}
 		serverConfig := config.NewServerConfig()
+		quit := make(chan os.Signal)
+		signal.Notify(quit, os.Interrupt)
 		// Start server
 		go func() {
 			if err := e.Start(serverConfig.Port); err != nil {
-				e.Logger.Info("shutting down the server")
+				e.Logger.Info("shutting down the server: ", err)
+				quit <- os.Interrupt
 			}
 		}()
 
 		// Wait for interrupt signal to gracefully shutdown the server with
 		// a timeout of 10 seconds.
-		quit := make(chan os.Signal)
-		signal.Notify(quit, os.Interrupt)
 		<-quit
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
