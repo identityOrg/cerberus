@@ -33,7 +33,7 @@ jobs:
         id: prep
         run: |
           DOCKER_IMAGE=identityorg/cerberus
-          GHCR_IMAGE=ghcr.io/identityOrg/cerberus
+          GHCR_IMAGE=ghcr.io/identityorg/cerberus
           VERSION=noop
           if [ "${{ github.event_name }}" = "schedule" ]; then
           VERSION=nightly
