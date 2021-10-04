@@ -1,7 +1,7 @@
 FROM golang:alpine as build
 RUN apk add --no-cache git make build-base
 
-RUN go install github.com/GeertJohan/go.rice/rice
+RUN go get github.com/GeertJohan/go.rice/rice
 
 WORKDIR /go/src/github.com/identityOrg/cerberus
 
